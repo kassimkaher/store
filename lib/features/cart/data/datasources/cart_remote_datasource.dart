@@ -52,9 +52,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
         'products': productIds,
       };
 
-      await getIt<DioClient>().getInstance().post<Map<String, dynamic>>(
-        '/stores/cart/store_id/$storeId',
-        data: cartData,
+      await getIt<DioClient>().instance().cart.submitCart(
+        storeId: storeId,
+        cartData: cartData,
       );
       return const Right(null);
     } on DioException catch (e) {
@@ -70,13 +70,13 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     String status = 'all',
   }) async {
     try {
-      final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/cart/store_id/$storeId',
-            queryParameters: {'page': page, 'limit': limit, 'status': status},
-          );
-      final responseData = response.data!;
+      final response = await getIt<DioClient>().instance().cart.getMyCartOrders(
+        storeId: storeId,
+        page: page,
+        limit: limit,
+        status: status,
+      );
+      final responseData = response.data as Map<String, dynamic>;
       final resultsList = (responseData['results']['data'] as List)
           .map(
             (item) => CartOrderModel.fromJson(

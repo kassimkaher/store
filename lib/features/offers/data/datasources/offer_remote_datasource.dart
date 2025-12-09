@@ -32,13 +32,12 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/offers/store_id/$storeId',
-            queryParameters: {'page': page, 'limit': limit},
-          );
-      final responseData = response.data!;
+      final response = await getIt<DioClient>().instance().offers.getOffers(
+        storeId: storeId,
+        page: page,
+        limit: limit,
+      );
+      final responseData = response.data as Map<String, dynamic>;
       final contentUrl = responseData['r2_base_url'] as String?;
       final resultsList = (responseData['results']['data'] as List).map((item) {
         final model = OfferModel.fromJson(item as Map<String, dynamic>);
@@ -67,13 +66,13 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/offers/store_id/$storeId',
-            queryParameters: {'page': page, 'limit': limit, 'search': search},
-          );
-      final responseData = response.data!;
+      final response = await getIt<DioClient>().instance().offers.searchOffers(
+        storeId: storeId,
+        search: search,
+        page: page,
+        limit: limit,
+      );
+      final responseData = response.data as Map<String, dynamic>;
       final resultsList = (responseData['results']['data'] as List)
           .map(
             (item) =>

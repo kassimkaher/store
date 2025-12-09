@@ -3,6 +3,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../utils/injector/injector.dart';
 import '../../../offers/data/models/offer_model.dart';
 import '../../../products/data/models/product_model.dart';
 import '../../domain/entities/search_result_entity.dart';
@@ -32,10 +34,6 @@ abstract class SearchRemoteDataSource {
 
 @LazySingleton(as: SearchRemoteDataSource)
 class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
-  final Dio dio;
-
-  SearchRemoteDataSourceImpl(this.dio);
-
   @override
   Future<Either<Failure, List<SearchResult>>> searchProducts({
     required String storeId,
@@ -44,12 +42,18 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await dio.get(
-        '/web/stores/products/store_id/$storeId/mostPurchased?page=1&limit=10&search=$query',
-        queryParameters: {'page': page, 'limit': limit, 'search': query},
-      );
+      final response = await getIt<DioClient>()
+          .instance()
+          .products
+          .searchProducts(
+            storeId: storeId,
+            search: query,
+            page: page,
+            limit: limit,
+          );
 
-      if (response.statusCode == 200 && response.data['status'] == 'success') {
+      if (response.response.statusCode == 200 &&
+          response.data['status'] == 'success') {
         final List<dynamic> productsData = response.data['data']['data'] ?? [];
         final products = productsData
             .map((json) => ProductModel.fromJson(json))
@@ -92,12 +96,15 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await dio.get(
-        '/web/stores/offers/store_id/$storeId',
-        queryParameters: {'page': page, 'limit': limit, 'search': query},
+      final response = await getIt<DioClient>().instance().offers.searchOffers(
+        storeId: storeId,
+        search: query,
+        page: page,
+        limit: limit,
       );
 
-      if (response.statusCode == 200 && response.data['status'] == 'success') {
+      if (response.response.statusCode == 200 &&
+          response.data['status'] == 'success') {
         final List<dynamic> offersData = response.data['data']['data'] ?? [];
         final offers = offersData
             .map((json) => OfferModel.fromJson(json))

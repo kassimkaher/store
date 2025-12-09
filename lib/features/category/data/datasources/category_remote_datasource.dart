@@ -27,12 +27,10 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   }) async {
     try {
       final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/categories/store_id/$storeId',
-            queryParameters: {'page': page, 'limit': limit},
-          );
-      final responseData = response.data!;
+          .instance()
+          .categories
+          .getCategories(storeId: storeId, page: page, limit: limit);
+      final responseData = response.data as Map<String, dynamic>;
       final resultsList = (responseData['results']['data'] as List)
           .map(
             (item) => CategoryModel.fromJson(

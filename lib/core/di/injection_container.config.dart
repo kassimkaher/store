@@ -71,23 +71,20 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1068.OfferRemoteDataSourceImpl());
     gh.lazySingleton<_i122.OfferRepository>(
         () => _i668.OfferRepositoryImpl(gh<_i1068.OfferRemoteDataSource>()));
+    gh.lazySingleton<_i862.SearchRemoteDataSource>(
+        () => _i862.SearchRemoteDataSourceImpl());
     gh.lazySingleton<_i591.CategoryRemoteDataSource>(
         () => _i591.CategoryRemoteDataSourceImpl());
+    gh.lazySingleton<_i227.SearchRepository>(
+        () => _i232.SearchRepositoryImpl(gh<_i862.SearchRemoteDataSource>()));
     gh.singleton<_i47.AuthCubit>(
         () => _i47.AuthCubit(gh<_i454.MiniAppStorageService>()));
-    gh.lazySingleton<_i862.SearchRemoteDataSource>(
-        () => _i862.SearchRemoteDataSourceImpl(
-              gh<_i785.ProductRemoteDataSource>(),
-              gh<_i1068.OfferRemoteDataSource>(),
-            ));
     gh.lazySingleton<_i839.CartRepository>(
         () => _i252.CartRepositoryImpl(gh<_i973.CartRemoteDataSource>()));
     gh.lazySingleton<_i52.ProductRepository>(
         () => _i322.ProductRepositoryImpl(gh<_i785.ProductRemoteDataSource>()));
     gh.lazySingleton<_i936.CategoryRepository>(() =>
         _i750.CategoryRepositoryImpl(gh<_i591.CategoryRemoteDataSource>()));
-    gh.lazySingleton<_i227.SearchRepository>(
-        () => _i232.SearchRepositoryImpl(gh<_i862.SearchRemoteDataSource>()));
     return this;
   }
 }

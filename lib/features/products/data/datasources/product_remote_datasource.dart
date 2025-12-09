@@ -37,12 +37,10 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }) async {
     try {
       final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/products/store_id/$storeId/mostPurchased',
-            queryParameters: {'page': page, 'limit': limit},
-          );
-      final responseData = response.data!;
+          .instance()
+          .products
+          .getMostPurchased(storeId: storeId, page: page, limit: limit);
+      final responseData = response.data as Map<String, dynamic>;
       final resultsList = (responseData['results'] as List)
           .map(
             (item) => ProductModel.fromJson(
@@ -63,11 +61,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }) async {
     try {
       final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/products/$productId/store_id/$storeId',
-          );
-      return Right(ProductModel.fromJson(response.data!).toEntity());
+          .instance()
+          .products
+          .getProductDetails(productId: productId, storeId: storeId);
+      final responseData = response.data as Map<String, dynamic>;
+      return Right(ProductModel.fromJson(responseData).toEntity());
     } on DioException catch (e) {
       return Left(NetworkHandler.handleDioException(e));
     }
@@ -82,16 +80,15 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }) async {
     try {
       final response = await getIt<DioClient>()
-          .getInstance()
-          .get<Map<String, dynamic>>(
-            '/stores/products/store_id/$storeId',
-            queryParameters: {
-              'page': page,
-              'limit': limit,
-              'category_id': categoryId,
-            },
+          .instance()
+          .products
+          .getProductsByCategory(
+            storeId: storeId,
+            categoryId: categoryId,
+            page: page,
+            limit: limit,
           );
-      final responseData = response.data!;
+      final responseData = response.data as Map<String, dynamic>;
       final resultsList = (responseData['results']['data'] as List)
           .map(
             (item) => ProductModel.fromJson(

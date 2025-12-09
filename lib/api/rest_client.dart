@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 
-import 'products/products_client.dart';
-import 'offers/offers_client.dart';
-import 'categories/categories_client.dart';
 import 'cart/cart_client.dart';
+import 'categories/categories_client.dart';
+import 'offers/offers_client.dart';
+import 'products/products_client.dart';
 
 /// Store Web API Client
 class RestClient {
@@ -20,8 +20,7 @@ class RestClient {
   ProductsClient get products =>
       _products ??= ProductsClient(_dio, baseUrl: _baseUrl);
 
-  OffersClient get offers =>
-      _offers ??= OffersClient(_dio, baseUrl: _baseUrl);
+  OffersClient get offers => _offers ??= OffersClient(_dio, baseUrl: _baseUrl);
 
   CategoriesClient get categories =>
       _categories ??= CategoriesClient(_dio, baseUrl: _baseUrl);
