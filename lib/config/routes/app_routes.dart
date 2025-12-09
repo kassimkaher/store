@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:store_web/features/auth/presentation/auth_example_page.dart';
 import 'package:store_web/features/category/presentation/pages/category_products_page.dart';
 
 import '../../features/bookmarks/presentation/pages/bookmarks_page.dart';
@@ -12,13 +13,14 @@ class AppRoutes {
   static const String home = '/';
   static const String design = '/design';
   static const String itemDetail = '/item/:id';
-  static const String cart = '/cart';
+  static const String cart = '/cart/:isBackButtonVisible';
   static const String checkout = '/checkout';
   static const String search = '/search';
   static const String bookmarks = '/bookmarks';
   static const String productDetail = '/product/:id';
   static const String categoryProducts = '/category/:id/:categoryName/:storeId';
   static const String orderHistory = '/orders';
+  static const String authTest = '/authTest';
 
   // Default storeId - in a real app, this would come from configuration or user session
 
@@ -45,7 +47,10 @@ class AppRoutes {
       GoRoute(
         path: cart,
         name: 'cart',
-        builder: (context, state) => const CartPage(),
+        builder: (context, state) => CartPage(
+          isBackButtonVisible:
+              state.pathParameters['isBackButtonVisible'] == 'true',
+        ),
       ),
       GoRoute(
         path: checkout,
@@ -88,6 +93,11 @@ class AppRoutes {
             storeId: storeId,
           );
         },
+      ),
+      GoRoute(
+        path: authTest,
+        name: 'authTest',
+        builder: (context, state) => const AuthExamplePage(), // Placeholder
       ),
     ],
   );

@@ -1,23 +1,24 @@
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
+import 'package:store_web/features/auth/cubit/auth_cubit.dart';
+import 'package:store_web/utils/injector/injector.dart';
 
 import '../../domain/usecases/product_usecases.dart';
 import 'products_state.dart';
 
 // Most Purchased Cubit
+@injectable
 class MostPurchasedCubit extends Cubit<MostPurchasedState> {
   final GetMostPurchasedUseCase getMostPurchasedUseCase;
-  final String storeId;
 
-  MostPurchasedCubit({
-    required this.getMostPurchasedUseCase,
-    required this.storeId,
-  }) : super(const MostPurchasedState.initial());
+  MostPurchasedCubit({required this.getMostPurchasedUseCase})
+    : super(const MostPurchasedState.initial());
 
   Future<void> loadProducts({int page = 1, int limit = 10}) async {
     emit(const MostPurchasedState.loading());
 
     final result = await getMostPurchasedUseCase(
-      storeId: storeId,
+      storeId: getIt<AuthCubit>().currentAuthData?.storeId ?? '',
       page: page,
       limit: limit,
     );

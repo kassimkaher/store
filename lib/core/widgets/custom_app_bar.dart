@@ -33,7 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final textTheme = theme.textTheme;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 70, 24, 16),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
       color: colorScheme.surface,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +99,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             color: colorScheme.onSecondaryContainer,
                           ),
                           onPressed: () {
-                            context.push('/cart');
+                            context.push('/cart/true');
                           },
                         ),
                       ),

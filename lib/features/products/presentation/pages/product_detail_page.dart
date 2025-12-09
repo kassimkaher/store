@@ -107,7 +107,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   Widget _buildHeader(BuildContext context, ProductEntity product) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 16),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

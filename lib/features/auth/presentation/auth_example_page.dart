@@ -59,7 +59,10 @@ class AuthExamplePage extends StatelessWidget {
                         title: 'User Information',
                         children: [
                           _InfoRow('ID', data.id),
-                          _InfoRow('Name', data.name),
+                          _InfoRow(
+                            'Name',
+                            getIt<AuthCubit>().currentAuthData?.name ?? '',
+                          ),
                           _InfoRow('Email', data.email),
                           _InfoRow('Phone', data.phone),
                         ],

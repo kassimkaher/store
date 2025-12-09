@@ -22,6 +22,7 @@ class CustomBottomNav extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(color: colorScheme.surface.withAlpha(20)),
       child: ClipRect(
         child: BackdropFilter(

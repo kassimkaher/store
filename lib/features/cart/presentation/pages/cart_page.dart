@@ -12,7 +12,8 @@ import '../cubit/cart_cubit.dart';
 import '../cubit/cart_state.dart';
 
 class CartPage extends StatefulWidget {
-  const CartPage({super.key});
+  const CartPage({super.key, this.isBackButtonVisible = true});
+  final bool isBackButtonVisible;
 
   @override
   State<CartPage> createState() => _CartPageState();
@@ -106,11 +107,18 @@ class _CartPageState extends State<CartPage> {
         builder: (context, state) => Scaffold(
           backgroundColor: colorScheme.surfaceContainerHighest,
           appBar: AppBar(
-            leading: PhosphorIcon(
-              PhosphorIcons.arrowLeft(),
-              size: 24,
-              color: colorScheme.onSurface,
-            ),
+            leading: widget.isBackButtonVisible
+                ? IconButton(
+                    icon: PhosphorIcon(
+                      PhosphorIcons.arrowLeft(),
+                      size: 24,
+                      color: colorScheme.onSurface,
+                    ),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  )
+                : null,
             title: const Text(
               'سلة التسوق',
               style: TextStyle(
@@ -170,7 +178,11 @@ class _CartPageState extends State<CartPage> {
               if (state.items.isEmpty) {
                 return const SizedBox.shrink();
               }
-              return _buildBottomSection(context, state);
+              return _buildBottomSection(
+                context,
+                state,
+                widget.isBackButtonVisible,
+              );
             },
           ),
         ),
@@ -626,7 +638,11 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _buildBottomSection(BuildContext context, CartState state) {
+  Widget _buildBottomSection(
+    BuildContext context,
+    CartState state,
+    bool isBackButtonVisible,
+  ) {
     final cartCubit = context.read<CartCubit>();
     final subtotal = cartCubit.totalAmount;
 
@@ -646,7 +662,12 @@ class _CartPageState extends State<CartPage> {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            isBackButtonVisible ? 24 : 0,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -27,10 +27,9 @@ class CategoryProductsPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => CategoriesCubit(
-            getAllCategoriesUseCase: getIt(),
-            storeId: storeId,
-          )..loadCategories(page: 1, limit: 100),
+          create: (context) =>
+              CategoriesCubit(getAllCategoriesUseCase: getIt())
+                ..loadCategories(page: 1, limit: 100),
         ),
         BlocProvider(
           create: (context) => ProductsByCategoryCubit(
@@ -90,9 +89,7 @@ class _CategoryProductsContentState extends State<_CategoryProductsContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           _selectedCategoryName,

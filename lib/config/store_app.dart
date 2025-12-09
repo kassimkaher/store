@@ -4,10 +4,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_web/core/theme/theme_app.dart';
+import 'package:store_web/features/auth/cubit/auth_cubit.dart';
+import 'package:store_web/features/bookmarks/presentation/cubit/bookmark_cubit.dart';
+import 'package:store_web/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:store_web/features/category/presentation/cubit/categories_cubit.dart';
+import 'package:store_web/features/offers/presentation/cubit/offers_cubit.dart';
+import 'package:store_web/features/products/presentation/cubit/products_cubit.dart';
 
 import '../core/utils/app_credentials.dart';
-import '../features/bookmarks/presentation/cubit/bookmark_cubit.dart';
-import '../features/cart/presentation/cubit/cart_cubit.dart';
 import '../utils/injector/injector.dart';
 import 'routes/app_routes.dart';
 
@@ -118,8 +122,17 @@ class StoreApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => getIt<CartCubit>()),
-        BlocProvider(create: (context) => getIt<BookmarkCubit>()),
+        BlocProvider.value(value: getIt<AuthCubit>()..loadAuthData()),
+        BlocProvider(
+          create: (context) => OffersCubit(getOffersUseCase: getIt()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              CategoriesCubit(getAllCategoriesUseCase: getIt()),
+        ),
+        BlocProvider.value(value: getIt<MostPurchasedCubit>()),
+        BlocProvider.value(value: getIt<CartCubit>()),
+        BlocProvider.value(value: getIt<BookmarkCubit>()),
       ],
       child: MaterialApp.router(
         title: 'Store App',
@@ -136,6 +149,16 @@ class StoreApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         routerConfig: router,
+        builder: (context, child) => Scaffold(
+          appBar: AppBar(
+            backgroundColor: colorScheme.surface,
+            title: Text(""),
+            surfaceTintColor: Colors.transparent,
+            foregroundColor: Colors.black.withAlpha(0),
+            shadowColor: Colors.teal.withAlpha(0),
+          ),
+          body: Padding(padding: EdgeInsets.only(top: 0), child: child!),
+        ),
       ),
     );
   }

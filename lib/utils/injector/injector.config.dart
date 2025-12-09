@@ -51,6 +51,8 @@ import 'package:store_web/features/products/domain/repositories/product_reposito
     as _i52;
 import 'package:store_web/features/products/domain/usecases/product_usecases.dart'
     as _i574;
+import 'package:store_web/features/products/presentation/cubit/products_cubit.dart'
+    as _i667;
 import 'package:store_web/features/search/data/datasources/search_remote_datasource.dart'
     as _i862;
 import 'package:store_web/features/search/data/repositories/search_repository_impl.dart'
@@ -125,6 +127,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i356.CartCubit(gh<_i394.SubmitCartUseCase>()));
     gh.lazySingleton<_i1022.GetAllCategoriesUseCase>(
         () => _i1022.GetAllCategoriesUseCase(gh<_i936.CategoryRepository>()));
+    gh.factory<_i667.MostPurchasedCubit>(() => _i667.MostPurchasedCubit(
+        getMostPurchasedUseCase: gh<_i574.GetMostPurchasedUseCase>()));
     return this;
   }
 }
