@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:store_web/config/store_app.dart';
+import 'package:store_web/core/utils/functions/price.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
@@ -25,7 +28,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final storeId = context.read<AuthCubit>().currentAuthData?.storeId ?? '';
+    final storeId = getIt<AuthCubit>().currentAuthData?.storeId ?? '';
 
     return BlocProvider(
       create: (context) => ProductDetailCubit(
@@ -33,7 +36,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         storeId: storeId,
       )..loadProductDetails(widget.productId),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F8F7),
         body: BlocBuilder<ProductDetailCubit, ProductDetailState>(
           builder: (context, state) {
             return state.when(
@@ -53,12 +55,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               _buildImageSection(product),
                               const SizedBox(height: 24),
                               _buildProductInfo(product),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 16),
                               _buildDescription(product),
-                              const SizedBox(height: 24),
-                              _buildDetails(),
-                              const SizedBox(height: 24),
-                              _buildDeliveryOptions(),
                             ],
                           ),
                         ),
@@ -110,12 +108,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildHeader(BuildContext context, ProductEntity product) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 48, 24, 16),
-      color: const Color(0xFFF7F8F7),
+
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
+            },
             child: Container(
               width: 40,
               height: 40,
@@ -168,33 +172,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 },
               ),
               const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {
-                  context.read<CartCubit>().addToCart(
-                    product,
-                    quantity: _quantity,
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('تمت إضافة ${product.name} إلى السلة'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEFF0EF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.shopping_cart,
-                    color: Color(0xFF4A5250),
-                    size: 20,
-                  ),
-                ),
-              ),
             ],
           ),
         ],
@@ -203,7 +180,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildImageSection(ProductEntity product) {
-    final mainImage = product.image ?? '';
+    final mainImage = (product.baseUrl ?? "") + (product.image ?? '');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -274,74 +251,47 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFF0EF),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.star, size: 16, color: Color(0xFFFFA500)),
-                    const SizedBox(width: 4),
-                    const Text(
-                      '4.8',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF4A5250),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      '(124)',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF8A9290)),
-                    ),
-                  ],
-                ),
-              ),
+              _buildRateUi(),
             ],
           ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Text(
-                '\$${product.price.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF005292),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '\$${(product.price * 1.18).toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFF8A9290),
-                  decoration: TextDecoration.lineThrough,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC87A7A).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  '15% OFF',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFC87A7A),
-                  ),
-                ),
-              ),
-            ],
+          const SizedBox(height: 16),
+
+          Text(
+            '${formatPrice(product.price)} د.ع',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005292),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildRateUi() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF0EF),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.star, size: 16, color: Color(0xFFFFA500)),
+          const SizedBox(width: 4),
+          const Text(
+            '4.8',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A5250),
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Text(
+            '(124)',
+            style: TextStyle(fontSize: 12, color: Color(0xFF8A9290)),
           ),
         ],
       ),
@@ -354,228 +304,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Description',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A5250),
-            ),
-          ),
+          Text('الوصف', style: textTheme.titleMedium),
           const SizedBox(height: 12),
           Text(
-            product.description ?? 'No description available',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF4A5250),
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetails() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Details',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A5250),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildDetailItem(
-            Icons.local_florist,
-            'Fresh Cut Flowers',
-            'Hand-picked daily',
-          ),
-          const SizedBox(height: 12),
-          _buildDetailItem(
-            Icons.card_giftcard,
-            'Vase Included',
-            'Premium glass vase',
-          ),
-          const SizedBox(height: 12),
-          _buildDetailItem(
-            Icons.local_shipping,
-            'Fast Delivery',
-            'Same-day available',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailItem(IconData icon, String title, String subtitle) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-            color: Color(0xFFEFF0EF),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, size: 20, color: const Color(0xFF005292)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF4A5250),
-                ),
-              ),
-              Text(
-                subtitle,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF8A9290)),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDeliveryOptions() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Delivery Options',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A5250),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF005292), width: 2),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFF005292),
-                      width: 2,
-                    ),
-                    color: const Color(0xFF005292),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.circle, size: 10, color: Colors.white),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Standard Delivery',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A5250),
-                        ),
-                      ),
-                      const Text(
-                        '2-3 business days',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF8A9290),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Text(
-                  'Free',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF005292),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E8E6), width: 1),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFF005292),
-                      width: 2,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Express Delivery',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A5250),
-                        ),
-                      ),
-                      const Text(
-                        'Same day delivery',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF8A9290),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Text(
-                  '12 د.ع',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A5250),
-                  ),
-                ),
-              ],
-            ),
+            product.description ?? ' لا يوجد وصف متاح لهذا المنتج.',
+            style: textTheme.bodyMedium,
           ),
         ],
       ),
@@ -585,7 +318,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildBottomBar(BuildContext context, ProductEntity product) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F8F7).withOpacity(0.95),
+        color: colorScheme.surfaceContainer,
         border: const Border(
           top: BorderSide(color: Color(0xFFE5E8E6), width: 1),
         ),
@@ -597,127 +330,118 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ],
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Quantity',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF4A5250),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('الكمية', style: textTheme.titleMedium),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (_quantity > 1) {
+                          setState(() => _quantity--);
+                        }
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFEFF0EF),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.remove,
+                          color: Color(0xFF4A5250),
+                          size: 20,
+                        ),
+                      ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (_quantity > 1) {
-                            setState(() => _quantity--);
-                          }
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFEFF0EF),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.remove,
-                            color: Color(0xFF4A5250),
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 50,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '$_quantity',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4A5250),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => setState(() => _quantity++),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFEFF0EF),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: Color(0xFF4A5250),
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () {
-                  context.read<CartCubit>().addToCart(
-                    product,
-                    quantity: _quantity,
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'تمت إضافة $_quantity من ${product.name} إلى السلة',
-                      ),
-                      duration: const Duration(seconds: 2),
-                      backgroundColor: const Color(0xFF005292),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF005292),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF005292).withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.shopping_cart, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          fontSize: 16,
+                    Container(
+                      width: 50,
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$_quantity',
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color(0xFF4A5250),
                         ),
                       ),
-                    ],
+                    ),
+                    GestureDetector(
+                      onTap: () => setState(() => _quantity++),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFEFF0EF),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Color(0xFF4A5250),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {
+                context.read<CartCubit>().addToCart(
+                  product,
+                  quantity: _quantity,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'تمت إضافة $_quantity من ${product.name} إلى السلة',
+                    ),
+                    duration: const Duration(seconds: 2),
+                    backgroundColor: const Color(0xFF005292),
                   ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF005292),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF005292).withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.shopping_cart, color: Colors.white, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Add to Cart',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

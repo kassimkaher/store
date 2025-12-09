@@ -14,7 +14,7 @@ abstract class ProductsClient {
     @Query('limit') int limit = 20,
   });
 
-  @GET('/stores/products/{productId}/store_id/{storeId}')
+  @GET('/stores/products/store_id/{storeId}/id/{productId}')
   Future<HttpResponse> getProductDetails({
     @Path('productId') required String productId,
     @Path('storeId') required String storeId,

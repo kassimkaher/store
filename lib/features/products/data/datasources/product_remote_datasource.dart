@@ -65,7 +65,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           .products
           .getProductDetails(productId: productId, storeId: storeId);
       final responseData = response.data as Map<String, dynamic>;
-      return Right(ProductModel.fromJson(responseData).toEntity());
+      return Right(
+        ProductModel.fromJson(
+          responseData['results'],
+        ).toEntity(responseData['r2_base_url'] as String?),
+      );
     } on DioException catch (e) {
       return Left(NetworkHandler.handleDioException(e));
     }

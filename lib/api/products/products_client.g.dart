@@ -72,7 +72,7 @@ class _ProductsClient implements ProductsClient {
     )
         .compose(
           _dio.options,
-          '/stores/products/${productId}/store_id/${storeId}',
+          '/stores/products/store_id/${storeId}/id/${productId}',
           queryParameters: queryParameters,
           data: _data,
         )

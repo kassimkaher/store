@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:store_web/core/utils/functions/price.dart';
 import 'package:store_web/core/widgets/custom_cached_image.dart';
 import 'package:store_web/features/products/domain/entities/product_entity.dart';
 
@@ -21,11 +21,6 @@ class ProductCard extends StatelessWidget {
     this.onLikeTap,
     this.onAddToCart,
   });
-
-  String _formatPrice(double price) {
-    final formatter = NumberFormat('#,###');
-    return formatter.format(price.round());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +147,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${_formatPrice(productData.price)} د.ع',
+                        '${formatPrice(productData.price)} د.ع',
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
