@@ -99,7 +99,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             color: colorScheme.onSecondaryContainer,
                           ),
                           onPressed: () {
-                            context.go('/cart');
+                            context.push('/cart');
                           },
                         ),
                       ),

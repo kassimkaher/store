@@ -131,7 +131,13 @@ class CartCubit extends Cubit<CartState> {
     double lat = 0.0,
     double lng = 0.0,
   }) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(
+      state.copyWith(
+        isSubmitting: true,
+        submitSuccess: false,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final productIds = state.items.map((item) => item.product.id).toList();
@@ -149,16 +155,34 @@ class CartCubit extends Cubit<CartState> {
 
       result.fold(
         (failure) {
-          emit(state.copyWith(isLoading: false, errorMessage: failure.message));
+          emit(
+            state.copyWith(
+              isSubmitting: false,
+              submitSuccess: false,
+              errorMessage: failure.message,
+            ),
+          );
         },
         (_) {
           // Clear cart on success
           clearCart();
-          emit(state.copyWith(isLoading: false, errorMessage: null));
+          emit(
+            state.copyWith(
+              isSubmitting: false,
+              submitSuccess: true,
+              errorMessage: null,
+            ),
+          );
         },
       );
     } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          submitSuccess: false,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

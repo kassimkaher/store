@@ -25,7 +25,6 @@ class _CartPageState extends State<CartPage> {
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String _receiverType = 'لنفسي'; // Default value
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -37,47 +36,44 @@ class _CartPageState extends State<CartPage> {
 
   void _handleCheckout(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      setState(() {
-        _isSubmitting = true;
-      });
+      final address = _addressController.text.trim();
+      final note = _noteController.text.trim();
+      final receiverPhone = _receiverPhoneController.text.trim();
+      final storeId = getIt<AuthCubit>().currentAuthData?.storeId ?? '';
 
-      try {
-        final address = _addressController.text.trim();
-        final note = _noteController.text.trim();
-        final receiverPhone = _receiverPhoneController.text.trim();
-        final storeId = getIt<AuthCubit>().currentAuthData?.storeId ?? '';
-
-        if (storeId.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('خطأ: لم يتم العثور على معرف المتجر'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        // Submit cart
-        await context.read<CartCubit>().submitCart(
-          storeId: storeId,
-          address: address,
-          note: note.isEmpty ? 'طلب من التطبيق' : note,
-          receiverNumber: receiverPhone,
-          deliveryReceiverType: _receiverType,
+      if (storeId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('خطأ: لم يتم العثور على معرف المتجر'),
+            backgroundColor: Colors.red,
+          ),
         );
+        return;
+      }
 
-        // Check for errors
-        final state = context.read<CartCubit>().state;
-        if (!mounted) return;
+      // Submit cart
+      await context.read<CartCubit>().submitCart(
+        storeId: storeId,
+        address: address,
+        note: note.isEmpty ? 'طلب من التطبيق' : note,
+        receiverNumber: receiverPhone,
+        deliveryReceiverType: _receiverType,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('الرجاء ملء جميع الحقول المطلوبة'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('خطأ: ${state.errorMessage}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else {
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state.submitSuccess) {
           // Success
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -92,98 +88,91 @@ class _CartPageState extends State<CartPage> {
           _receiverPhoneController.clear();
 
           // Navigate back or to home
-
-          context.pop();
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isSubmitting = false;
-          });
-        }
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('الرجاء ملء جميع الحقول المطلوبة'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<CartCubit, CartState>(
-      builder: (context, state) => Scaffold(
-        backgroundColor: colorScheme.surfaceContainerHighest,
-        appBar: AppBar(
-          leading: PhosphorIcon(
-            PhosphorIcons.arrowLeft(),
-            size: 24,
-            color: colorScheme.onSurface,
-          ),
-          title: const Text(
-            'سلة التسوق',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A5250),
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/');
+          }
+        } else if (state.errorMessage != null && !state.isSubmitting) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('خطأ: ${state.errorMessage}'),
+              backgroundColor: Colors.red,
             ),
-          ),
-          actions: [
-            GestureDetector(
-              onTap: state.items.isEmpty
-                  ? null
-                  : () => _showClearCartDialog(context),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEFF0EF),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.delete_outline,
-                  color: Color(0xFFC87A7A),
-                  size: 20,
-                ),
+          );
+        }
+      },
+      child: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) => Scaffold(
+          backgroundColor: colorScheme.surfaceContainerHighest,
+          appBar: AppBar(
+            leading: PhosphorIcon(
+              PhosphorIcons.arrowLeft(),
+              size: 24,
+              color: colorScheme.onSurface,
+            ),
+            title: const Text(
+              'سلة التسوق',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4A5250),
               ),
             ),
-            const SizedBox(width: 16),
-          ],
-        ),
-        body: Builder(
-          builder: (context) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state.items.isEmpty) {
-              return _buildEmptyState(context);
-            }
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 350),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCartItems(context, state),
-                  // _buildPromoCode(context),
-                  _buildDeliveryAddress(context),
-                ],
+            actions: [
+              GestureDetector(
+                onTap: state.items.isEmpty
+                    ? null
+                    : () => _showClearCartDialog(context),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEFF0EF),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Color(0xFFC87A7A),
+                    size: 20,
+                  ),
+                ),
               ),
-            );
-          },
-        ),
+              const SizedBox(width: 16),
+            ],
+          ),
+          body: Builder(
+            builder: (context) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-        bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
-          builder: (context, state) {
-            if (state.items.isEmpty) {
-              return const SizedBox.shrink();
-            }
-            return _buildBottomSection(context, state);
-          },
+              if (state.items.isEmpty) {
+                return _buildEmptyState(context);
+              }
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 350),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildCartItems(context, state),
+                    // _buildPromoCode(context),
+                    _buildDeliveryAddress(context),
+                  ],
+                ),
+              );
+            },
+          ),
+
+          bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
+            builder: (context, state) {
+              if (state.items.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return _buildBottomSection(context, state);
+            },
+          ),
         ),
       ),
     );
@@ -379,23 +368,24 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildDeliveryAddress(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'عنوان التوصيل',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A5250),
+    return Form(
+      key: _formKey,
+
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'عنوان التوصيل',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4A5250),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Form(
-            key: _formKey,
-            child: Container(
+            const SizedBox(height: 12),
+            Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFFFAFBFA),
@@ -450,184 +440,188 @@ class _CartPageState extends State<CartPage> {
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          // Receiver Type Dropdown
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E8E6),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.person_outline,
-                    color: Color(0xFF005292),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _receiverType,
-                    decoration: const InputDecoration(
-                      hintText: 'اختر المستلم',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'لنفسي', child: Text('لنفسي')),
-                      DropdownMenuItem(value: 'لشخص اخر', child: Text('لصديق')),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _receiverType = value ?? 'لنفسي';
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
 
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E8E6),
-                    borderRadius: BorderRadius.circular(16),
+            const SizedBox(height: 16),
+            // Receiver Type Dropdown
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAFBFA),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
-                  child: PhosphorIcon(
-                    textDirection: TextDirection.ltr,
-                    PhosphorIcons.phone(PhosphorIconsStyle.duotone),
-                    color: Color(0xFF005292),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _receiverPhoneController,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF4A5250),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E8E6),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'ادخل رقم هاتف المستلم...',
-                      hintStyle: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF8A9290),
+                    child: const Icon(
+                      Icons.person_outline,
+                      color: Color(0xFF005292),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _receiverType,
+                      decoration: const InputDecoration(
+                        hintText: 'اختر المستلم',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
                       ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+                      items: const [
+                        DropdownMenuItem(value: 'لنفسي', child: Text('لنفسي')),
+                        DropdownMenuItem(
+                          value: 'لشخص اخر',
+                          child: Text('لصديق'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _receiverType = value ?? 'لنفسي';
+                        });
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'الرجاء إدخال رقم المستلم';
-                      }
-                      final phone = value.trim();
-                      // Check if it's a valid number
-                      if (int.tryParse(phone) == null) {
-                        return 'رقم الهاتف يجب أن يحتوي على أرقام فقط';
-                      }
-                      // Check length (11 digits for Iraqi numbers)
-                      if (phone.length != 11) {
-                        return 'رقم الهاتف يجب أن يكون 11 رقم';
-                      }
-                      return null;
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E8E6),
-                    borderRadius: BorderRadius.circular(16),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAFBFA),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
-                  child: const Icon(
-                    Icons.note_outlined,
-                    color: Color(0xFF005292),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _noteController,
-                    maxLines: 3,
-                    minLines: 1,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF4A5250),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E8E6),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'ملاحظات إضافية (اختياري)...',
-                      hintStyle: TextStyle(
+                    child: PhosphorIcon(
+                      textDirection: TextDirection.ltr,
+                      PhosphorIcons.phone(PhosphorIconsStyle.duotone),
+                      color: Color(0xFF005292),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _receiverPhoneController,
+                      maxLines: 1,
+                      style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF8A9290),
+                        color: Color(0xFF4A5250),
                       ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+                      decoration: const InputDecoration(
+                        hintText: 'ادخل رقم هاتف المستلم...',
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF8A9290),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'الرجاء إدخال رقم المستلم';
+                        }
+                        final phone = value.trim();
+                        // Check if it's a valid number
+                        if (int.tryParse(phone) == null) {
+                          return 'رقم الهاتف يجب أن يحتوي على أرقام فقط';
+                        }
+                        // Check length (11 digits for Iraqi numbers)
+                        if (phone.length != 11) {
+                          return 'رقم الهاتف يجب أن يكون 11 رقم';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAFBFA),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E8E6),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.note_outlined,
+                      color: Color(0xFF005292),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _noteController,
+                      maxLines: 3,
+                      minLines: 1,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF4A5250),
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: 'ملاحظات إضافية (اختياري)...',
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF8A9290),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -684,12 +678,14 @@ class _CartPageState extends State<CartPage> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: _isSubmitting ? null : () => _handleCheckout(context),
+                onTap: state.isSubmitting
+                    ? null
+                    : () => _handleCheckout(context),
                 child: Container(
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: _isSubmitting
+                    color: state.isSubmitting
                         ? const Color(0xFF005292).withValues(alpha: 0.6)
                         : const Color(0xFF005292),
                     borderRadius: BorderRadius.circular(16),
@@ -701,7 +697,7 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ],
                   ),
-                  child: _isSubmitting
+                  child: state.isSubmitting
                       ? const Center(
                           child: SizedBox(
                             width: 24,
@@ -796,7 +792,7 @@ class _CartPageState extends State<CartPage> {
           ),
           const SizedBox(height: 24),
           OutlinedButton.icon(
-            onPressed: () => context.go('/orders'),
+            onPressed: () => context.push('/orders'),
             icon: const Icon(Icons.history),
             label: const Text('عرض الطلبات السابقة'),
             style: OutlinedButton.styleFrom(

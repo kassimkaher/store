@@ -58,7 +58,7 @@ class _HomeViewState extends State<HomeView> {
                       child: CustomSearchBar(
                         readOnly: true,
                         onTap: () {
-                          context.go('/search');
+                          context.push('/search');
                         },
                       ),
                     ),

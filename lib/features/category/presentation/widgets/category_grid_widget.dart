@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store_web/config/store_app.dart';
 import 'package:store_web/core/widgets/custom_cached_image.dart';
 
 import '../../domain/entities/category_entity.dart';
-import '../pages/category_products_page.dart';
 
 class CategoryGridWidget extends StatelessWidget {
   final List<CategoryEntity> categories;
@@ -61,16 +61,17 @@ class _CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CategoryProductsPage(
-              categoryId: category.id,
-              categoryName: category.name,
-              storeId: storeId,
-            ),
-          ),
-        );
+        context.push("/category/${category.id}/${category.name}/$storeId");
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => CategoryProductsPage(
+        //       categoryId: category.id,
+        //       categoryName: category.name,
+        //       storeId: storeId,
+        //     ),
+        //   ),
+        // );
       },
       borderRadius: BorderRadius.circular(12),
       child: Column(

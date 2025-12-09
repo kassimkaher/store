@@ -30,7 +30,7 @@ class ProductCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.go('/product/${productData.id}');
+        context.push('/product/${productData.id}');
       },
       child: Container(
         decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:store_web/features/category/presentation/pages/category_products_page.dart';
 
 import '../../features/bookmarks/presentation/pages/bookmarks_page.dart';
 import '../../features/cart/presentation/pages/cart_page.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String search = '/search';
   static const String bookmarks = '/bookmarks';
   static const String productDetail = '/product/:id';
+  static const String categoryProducts = '/category/:id/:categoryName/:storeId';
   static const String orderHistory = '/orders';
 
   // Default storeId - in a real app, this would come from configuration or user session
@@ -72,6 +74,20 @@ class AppRoutes {
         path: orderHistory,
         name: 'orderHistory',
         builder: (context, state) => const OrderHistoryPage(),
+      ),
+      GoRoute(
+        path: categoryProducts,
+        name: 'categoryProducts',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final categoryName = state.pathParameters['categoryName']!;
+          final storeId = state.pathParameters['storeId']!;
+          return CategoryProductsPage(
+            categoryId: id,
+            categoryName: categoryName,
+            storeId: storeId,
+          );
+        },
       ),
     ],
   );

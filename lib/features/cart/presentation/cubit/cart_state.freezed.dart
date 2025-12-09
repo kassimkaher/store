@@ -18,6 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CartState {
   List<CartItem> get items => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get isSubmitting => throw _privateConstructorUsedError;
+  bool get submitSuccess => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -30,7 +32,12 @@ abstract class $CartStateCopyWith<$Res> {
   factory $CartStateCopyWith(CartState value, $Res Function(CartState) then) =
       _$CartStateCopyWithImpl<$Res, CartState>;
   @useResult
-  $Res call({List<CartItem> items, bool isLoading, String? errorMessage});
+  $Res call(
+      {List<CartItem> items,
+      bool isLoading,
+      bool isSubmitting,
+      bool submitSuccess,
+      String? errorMessage});
 }
 
 /// @nodoc
@@ -48,6 +55,8 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
   $Res call({
     Object? items = null,
     Object? isLoading = null,
+    Object? isSubmitting = null,
+    Object? submitSuccess = null,
     Object? errorMessage = freezed,
   }) {
     return _then(_value.copyWith(
@@ -58,6 +67,14 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSubmitting: null == isSubmitting
+          ? _value.isSubmitting
+          : isSubmitting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      submitSuccess: null == submitSuccess
+          ? _value.submitSuccess
+          : submitSuccess // ignore: cast_nullable_to_non_nullable
               as bool,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -75,7 +92,12 @@ abstract class _$$CartStateImplCopyWith<$Res>
       __$$CartStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CartItem> items, bool isLoading, String? errorMessage});
+  $Res call(
+      {List<CartItem> items,
+      bool isLoading,
+      bool isSubmitting,
+      bool submitSuccess,
+      String? errorMessage});
 }
 
 /// @nodoc
@@ -91,6 +113,8 @@ class __$$CartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? items = null,
     Object? isLoading = null,
+    Object? isSubmitting = null,
+    Object? submitSuccess = null,
     Object? errorMessage = freezed,
   }) {
     return _then(_$CartStateImpl(
@@ -101,6 +125,14 @@ class __$$CartStateImplCopyWithImpl<$Res>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isSubmitting: null == isSubmitting
+          ? _value.isSubmitting
+          : isSubmitting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      submitSuccess: null == submitSuccess
+          ? _value.submitSuccess
+          : submitSuccess // ignore: cast_nullable_to_non_nullable
               as bool,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -116,6 +148,8 @@ class _$CartStateImpl implements _CartState {
   const _$CartStateImpl(
       {final List<CartItem> items = const [],
       this.isLoading = false,
+      this.isSubmitting = false,
+      this.submitSuccess = false,
       this.errorMessage})
       : _items = items;
 
@@ -132,11 +166,17 @@ class _$CartStateImpl implements _CartState {
   @JsonKey()
   final bool isLoading;
   @override
+  @JsonKey()
+  final bool isSubmitting;
+  @override
+  @JsonKey()
+  final bool submitSuccess;
+  @override
   final String? errorMessage;
 
   @override
   String toString() {
-    return 'CartState(items: $items, isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'CartState(items: $items, isLoading: $isLoading, isSubmitting: $isSubmitting, submitSuccess: $submitSuccess, errorMessage: $errorMessage)';
   }
 
   @override
@@ -147,13 +187,22 @@ class _$CartStateImpl implements _CartState {
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isSubmitting, isSubmitting) ||
+                other.isSubmitting == isSubmitting) &&
+            (identical(other.submitSuccess, submitSuccess) ||
+                other.submitSuccess == submitSuccess) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_items), isLoading, errorMessage);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_items),
+      isLoading,
+      isSubmitting,
+      submitSuccess,
+      errorMessage);
 
   @JsonKey(ignore: true)
   @override
@@ -166,12 +215,18 @@ abstract class _CartState implements CartState {
   const factory _CartState(
       {final List<CartItem> items,
       final bool isLoading,
+      final bool isSubmitting,
+      final bool submitSuccess,
       final String? errorMessage}) = _$CartStateImpl;
 
   @override
   List<CartItem> get items;
   @override
   bool get isLoading;
+  @override
+  bool get isSubmitting;
+  @override
+  bool get submitSuccess;
   @override
   String? get errorMessage;
   @override
