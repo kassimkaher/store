@@ -27,11 +27,12 @@ class OfferCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final width = MediaQuery.of(context).size.width;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 300,
+        width: width * 0.8,
         height: 180,
         decoration: BoxDecoration(
           color: backgroundColor,
@@ -40,7 +41,6 @@ class OfferCard extends StatelessWidget {
         child: Stack(
           children: [
             Row(
-              spacing: 8,
               children: [
                 Expanded(
                   child: Padding(
@@ -55,8 +55,21 @@ class OfferCard extends StatelessWidget {
                           color: colorScheme.onTertiary,
                         ),
 
-                        FilledButton(onPressed: () {}, child: Text("عرض")),
-                        Spacer(),
+                        OfferTitle(
+                          backgroundColor: backgroundColor,
+                          title: title,
+                          textTheme: textTheme,
+                        ),
+                        FilledButton(
+                          onPressed: () {},
+                          child: Text(
+                            "عرض",
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -95,36 +108,35 @@ class OfferCard extends StatelessWidget {
               ],
             ),
 
-            Positioned(
-              bottom: 10,
-              right: 0,
-              left: 110,
+            // Positioned(
+            //   top: 12,
+            //   bottom: 0,
+            //   right: 0,
+            //   left: 150,
 
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(24),
-                  bottomLeft: Radius.circular(24),
-                  topLeft: Radius.circular(24),
-                ),
-                child: CustomCachedImage(
-                  height: 30,
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 12,
-              bottom: 0,
-              right: 0,
-              left: 100,
-
-              child: OfferTitle(
-                backgroundColor: backgroundColor,
-                title: title,
-                textTheme: textTheme,
-              ),
-            ),
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.end,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     spacing: 4,
+            //     children: [
+            //       OfferTitle(
+            //         backgroundColor: backgroundColor,
+            //         title: title,
+            //         textTheme: textTheme,
+            //       ),
+            //       FilledButton(
+            //         onPressed: () {},
+            //         child: Text(
+            //           "عرض",
+            //           style: textTheme.bodyLarge?.copyWith(
+            //             color: colorScheme.onPrimaryContainer,
+            //             fontWeight: FontWeight.w900,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -147,7 +159,7 @@ class OfferTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.bottomRight,
+      alignment: Alignment.centerRight,
 
       child: ClipRRect(
         borderRadius: BorderRadius.only(
@@ -159,7 +171,7 @@ class OfferTitle extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             padding: const EdgeInsets.all(8.0),
-            width: double.infinity,
+            // width: double.infinity,
             decoration: BoxDecoration(
               color: backgroundColor.withAlpha(100),
               borderRadius: BorderRadius.only(

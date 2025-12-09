@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../products/domain/entities/product_entity.dart';
 import 'bookmark_item.dart';
 import 'bookmark_state.dart';
 
+@singleton
 class BookmarkCubit extends Cubit<BookmarkState> {
   static const String _bookmarkKey = 'bookmark_items';
 

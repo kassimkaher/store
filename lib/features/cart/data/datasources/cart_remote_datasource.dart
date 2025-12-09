@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
@@ -20,7 +23,7 @@ abstract class CartRemoteDataSource {
     required String address,
     required LocationMap locationMap,
   });
-  Future<Either<Failure, List<CartOrder>>> getMyCartOrders({
+  Future<Either<Failure, List<CartOrderEntity>>> getMyCartOrders({
     required String storeId,
     int page = 1,
     int limit = 10,
@@ -43,6 +46,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }) async {
     try {
       final cartData = {
+        "store_id": storeId,
         'note': note,
         'delivery_receiver_type': deliveryReceiverType,
         'receiver_number': receiverNumber,
@@ -51,7 +55,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
         'location_map': {'lat': locationMap.lat, 'lng': locationMap.lng},
         'products': productIds,
       };
-
+      log('Submitting cart data: ${jsonEncode(cartData)}');
       await getIt<DioClient>().instance().cart.submitCart(
         storeId: storeId,
         cartData: cartData,
@@ -63,7 +67,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, List<CartOrder>>> getMyCartOrders({
+  Future<Either<Failure, List<CartOrderEntity>>> getMyCartOrders({
     required String storeId,
     int page = 1,
     int limit = 10,
@@ -81,7 +85,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
           .map(
             (item) => CartOrderModel.fromJson(
               item as Map<String, dynamic>,
-            ).toEntity(),
+            ).toEntity(responseData['r2_base_url'] as String),
           )
           .toList();
       return Right(resultsList);

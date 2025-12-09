@@ -34,10 +34,10 @@ class _HomeViewState extends State<HomeView> {
             AppBar(
               flexibleSpace: CustomAppBar(
                 location:
-                    getIt<AuthCubit>().currentAuthData?.phone ??
+                    getIt<AuthCubit>().currentAuthData?.name ??
                     "Unknown Location",
                 address:
-                    getIt<AuthCubit>().currentAuthData?.name ??
+                    getIt<AuthCubit>().currentAuthData?.storeName ??
                     "Unknown Location",
                 hasNotification: true,
                 onLocationTap: () {},

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:store_web/core/di/injection_container.dart';
 import 'package:store_web/features/auth/cubit/auth_cubit.dart';
+import 'package:store_web/utils/injector/injector.dart';
 
 import '../../api/rest_client.dart';
 import '../storage/storage_service.dart';

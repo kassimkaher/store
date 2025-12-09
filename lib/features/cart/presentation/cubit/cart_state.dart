@@ -9,5 +9,6 @@ class CartState with _$CartState {
   const factory CartState({
     @Default([]) List<CartItem> items,
     @Default(false) bool isLoading,
+    String? errorMessage,
   }) = _CartState;
 }

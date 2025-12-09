@@ -7,7 +7,7 @@ import 'package:store_web/features/cart/presentation/pages/cart_page.dart';
 import 'package:store_web/features/cart/presentation/pages/order_history_page.dart';
 import 'package:store_web/features/home/presentation/pages/home_view.dart';
 
-import '../core/di/injection_container.dart';
+import '../utils/injector/injector.dart';
 import 'category/presentation/cubit/categories_cubit.dart';
 import 'offers/presentation/cubit/offers_cubit.dart';
 import 'products/presentation/cubit/products_cubit.dart';

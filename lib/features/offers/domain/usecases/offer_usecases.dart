@@ -1,7 +1,10 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../../core/utils/result.dart';
 import '../entities/offer_entity.dart';
 import '../repositories/offer_repository.dart';
 
+@lazySingleton
 class GetOffersUseCase {
   final OfferRepository repository;
 
@@ -16,6 +19,7 @@ class GetOffersUseCase {
   }
 }
 
+@lazySingleton
 class SearchOffersUseCase {
   final OfferRepository repository;
 

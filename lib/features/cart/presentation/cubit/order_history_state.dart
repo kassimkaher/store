@@ -8,7 +8,7 @@ part 'order_history_state.freezed.dart';
 class OrderHistoryState with _$OrderHistoryState {
   const factory OrderHistoryState.initial() = OrderHistoryInitial;
   const factory OrderHistoryState.loading() = OrderHistoryLoading;
-  const factory OrderHistoryState.loaded(List<CartOrder> orders) =
+  const factory OrderHistoryState.loaded(List<CartOrderEntity> orders) =
       OrderHistoryLoaded;
   const factory OrderHistoryState.error(String message) = OrderHistoryError;
 }

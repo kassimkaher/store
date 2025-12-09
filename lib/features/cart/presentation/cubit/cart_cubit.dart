@@ -1,16 +1,21 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_web/features/cart/domain/entities/cart_entity.dart';
 
 import '../../../products/domain/entities/product_entity.dart';
+import '../../domain/usecases/cart_usecases.dart';
 import 'cart_item.dart';
 import 'cart_state.dart';
 
+@singleton
 class CartCubit extends Cubit<CartState> {
   static const String _cartKey = 'cart_items';
+  final SubmitCartUseCase submitCartUseCase;
 
-  CartCubit() : super(const CartState()) {
+  CartCubit(this.submitCartUseCase) : super(const CartState()) {
     _loadCart();
   }
 
@@ -114,5 +119,46 @@ class CartCubit extends Cubit<CartState> {
 
   int get itemCount {
     return state.items.fold(0, (sum, item) => sum + item.quantity);
+  }
+
+  Future<void> submitCart({
+    required String storeId,
+    required String address,
+    String note = '',
+    required String deliveryReceiverType,
+    String receiverNumber = '',
+    String paymentMethod = 'الدفع الالكتروني',
+    double lat = 0.0,
+    double lng = 0.0,
+  }) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null));
+
+    try {
+      final productIds = state.items.map((item) => item.product.id).toList();
+
+      final result = await submitCartUseCase(
+        storeId: storeId,
+        productIds: productIds,
+        note: note,
+        deliveryReceiverType: deliveryReceiverType,
+        receiverNumber: receiverNumber,
+        paymentMethod: paymentMethod,
+        address: address,
+        locationMap: LocationMap(lat: lat.toString(), lng: lng.toString()),
+      );
+
+      result.fold(
+        (failure) {
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message));
+        },
+        (_) {
+          // Clear cart on success
+          clearCart();
+          emit(state.copyWith(isLoading: false, errorMessage: null));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
   }
 }

@@ -15,7 +15,7 @@ abstract class CartRepository {
     required LocationMap locationMap,
   });
 
-  Future<Either<Failure, List<CartOrder>>> getMyCartOrders({
+  Future<Either<Failure, List<CartOrderEntity>>> getMyCartOrders({
     required String storeId,
     int page = 1,
     int limit = 10,

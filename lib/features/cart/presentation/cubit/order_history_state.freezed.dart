@@ -20,7 +20,7 @@ mixin _$OrderHistoryState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<CartOrder> orders) loaded,
+    required TResult Function(List<CartOrderEntity> orders) loaded,
     required TResult Function(String message) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +28,7 @@ mixin _$OrderHistoryState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<CartOrder> orders)? loaded,
+    TResult? Function(List<CartOrderEntity> orders)? loaded,
     TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +36,7 @@ mixin _$OrderHistoryState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<CartOrder> orders)? loaded,
+    TResult Function(List<CartOrderEntity> orders)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) =>
@@ -127,7 +127,7 @@ class _$OrderHistoryInitialImpl implements OrderHistoryInitial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<CartOrder> orders) loaded,
+    required TResult Function(List<CartOrderEntity> orders) loaded,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -138,7 +138,7 @@ class _$OrderHistoryInitialImpl implements OrderHistoryInitial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<CartOrder> orders)? loaded,
+    TResult? Function(List<CartOrderEntity> orders)? loaded,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -149,7 +149,7 @@ class _$OrderHistoryInitialImpl implements OrderHistoryInitial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<CartOrder> orders)? loaded,
+    TResult Function(List<CartOrderEntity> orders)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -242,7 +242,7 @@ class _$OrderHistoryLoadingImpl implements OrderHistoryLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<CartOrder> orders) loaded,
+    required TResult Function(List<CartOrderEntity> orders) loaded,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -253,7 +253,7 @@ class _$OrderHistoryLoadingImpl implements OrderHistoryLoading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<CartOrder> orders)? loaded,
+    TResult? Function(List<CartOrderEntity> orders)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -264,7 +264,7 @@ class _$OrderHistoryLoadingImpl implements OrderHistoryLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<CartOrder> orders)? loaded,
+    TResult Function(List<CartOrderEntity> orders)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -322,7 +322,7 @@ abstract class _$$OrderHistoryLoadedImplCopyWith<$Res> {
           $Res Function(_$OrderHistoryLoadedImpl) then) =
       __$$OrderHistoryLoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<CartOrder> orders});
+  $Res call({List<CartOrderEntity> orders});
 }
 
 /// @nodoc
@@ -342,7 +342,7 @@ class __$$OrderHistoryLoadedImplCopyWithImpl<$Res>
       null == orders
           ? _value._orders
           : orders // ignore: cast_nullable_to_non_nullable
-              as List<CartOrder>,
+              as List<CartOrderEntity>,
     ));
   }
 }
@@ -350,12 +350,12 @@ class __$$OrderHistoryLoadedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OrderHistoryLoadedImpl implements OrderHistoryLoaded {
-  const _$OrderHistoryLoadedImpl(final List<CartOrder> orders)
+  const _$OrderHistoryLoadedImpl(final List<CartOrderEntity> orders)
       : _orders = orders;
 
-  final List<CartOrder> _orders;
+  final List<CartOrderEntity> _orders;
   @override
-  List<CartOrder> get orders {
+  List<CartOrderEntity> get orders {
     if (_orders is EqualUnmodifiableListView) return _orders;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_orders);
@@ -390,7 +390,7 @@ class _$OrderHistoryLoadedImpl implements OrderHistoryLoaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<CartOrder> orders) loaded,
+    required TResult Function(List<CartOrderEntity> orders) loaded,
     required TResult Function(String message) error,
   }) {
     return loaded(orders);
@@ -401,7 +401,7 @@ class _$OrderHistoryLoadedImpl implements OrderHistoryLoaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<CartOrder> orders)? loaded,
+    TResult? Function(List<CartOrderEntity> orders)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loaded?.call(orders);
@@ -412,7 +412,7 @@ class _$OrderHistoryLoadedImpl implements OrderHistoryLoaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<CartOrder> orders)? loaded,
+    TResult Function(List<CartOrderEntity> orders)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -461,10 +461,10 @@ class _$OrderHistoryLoadedImpl implements OrderHistoryLoaded {
 }
 
 abstract class OrderHistoryLoaded implements OrderHistoryState {
-  const factory OrderHistoryLoaded(final List<CartOrder> orders) =
+  const factory OrderHistoryLoaded(final List<CartOrderEntity> orders) =
       _$OrderHistoryLoadedImpl;
 
-  List<CartOrder> get orders;
+  List<CartOrderEntity> get orders;
   @JsonKey(ignore: true)
   _$$OrderHistoryLoadedImplCopyWith<_$OrderHistoryLoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -537,7 +537,7 @@ class _$OrderHistoryErrorImpl implements OrderHistoryError {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<CartOrder> orders) loaded,
+    required TResult Function(List<CartOrderEntity> orders) loaded,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -548,7 +548,7 @@ class _$OrderHistoryErrorImpl implements OrderHistoryError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<CartOrder> orders)? loaded,
+    TResult? Function(List<CartOrderEntity> orders)? loaded,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -559,7 +559,7 @@ class _$OrderHistoryErrorImpl implements OrderHistoryError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<CartOrder> orders)? loaded,
+    TResult Function(List<CartOrderEntity> orders)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {

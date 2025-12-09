@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store_web/core/di/injection_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:store_web/core/services/storage_service.dart';
+import 'package:store_web/utils/injector/injector.dart';
 
 import '../../features/cart/presentation/cubit/cart_cubit.dart';
 import '../../features/cart/presentation/cubit/cart_state.dart';
@@ -82,18 +83,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return Stack(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 45,
+                        height: 45,
                         decoration: BoxDecoration(
-                          color: colorScheme.secondary,
+                          color: colorScheme.secondaryContainer,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
                           padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.shopping_cart,
-                            size: 20,
-                            color: colorScheme.onSecondary,
+                          icon: PhosphorIcon(
+                            PhosphorIcons.shoppingCart(
+                              PhosphorIconsStyle.duotone,
+                            ),
+                            size: 25,
+                            color: colorScheme.onSecondaryContainer,
                           ),
                           onPressed: () {
                             context.go('/cart');
@@ -130,18 +133,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
               Container(
-                width: 40,
-                height: 40,
+                width: 45,
+                height: 45,
                 decoration: BoxDecoration(
-                  color: colorScheme.secondary,
+                  color: colorScheme.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Icon(
-                    Icons.home_outlined,
-                    size: 20,
-                    color: colorScheme.onSecondary,
+                  icon: PhosphorIcon(
+                    PhosphorIconsDuotone.house,
+                    size: 25,
+                    color: colorScheme.onPrimaryContainer,
                   ),
                   onPressed: () {
                     getIt<MiniAppStorageService>().saveData("logout", "true");

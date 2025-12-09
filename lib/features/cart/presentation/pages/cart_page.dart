@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:store_web/config/store_app.dart';
+import 'package:store_web/core/utils/functions/price.dart';
+import 'package:store_web/utils/injector/injector.dart';
 
 import '../../../../core/widgets/custom_cached_image.dart';
+import '../../../auth/cubit/auth_cubit.dart';
 import '../cubit/cart_cubit.dart';
 import '../cubit/cart_state.dart';
 
@@ -17,32 +20,92 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _receiverPhoneController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String _receiverType = 'لنفسي'; // Default value
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
     _addressController.dispose();
+    _noteController.dispose();
+    _receiverPhoneController.dispose();
     super.dispose();
   }
 
-  String _formatPrice(double price) {
-    final formatter = NumberFormat('#,###');
-    return formatter.format(price.round());
-  }
-
-  void _handleCheckout(BuildContext context) {
+  void _handleCheckout(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: Implement checkout logic with address
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('جاري معالجة الطلب...'),
-          backgroundColor: Color(0xFF005292),
-        ),
-      );
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      try {
+        final address = _addressController.text.trim();
+        final note = _noteController.text.trim();
+        final receiverPhone = _receiverPhoneController.text.trim();
+        final storeId = getIt<AuthCubit>().currentAuthData?.storeId ?? '';
+
+        if (storeId.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('خطأ: لم يتم العثور على معرف المتجر'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        // Submit cart
+        await context.read<CartCubit>().submitCart(
+          storeId: storeId,
+          address: address,
+          note: note.isEmpty ? 'طلب من التطبيق' : note,
+          receiverNumber: receiverPhone,
+          deliveryReceiverType: _receiverType,
+        );
+
+        // Check for errors
+        final state = context.read<CartCubit>().state;
+        if (!mounted) return;
+
+        if (state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('خطأ: ${state.errorMessage}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else {
+          // Success
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم إرسال الطلب بنجاح! ✓'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Clear the fields
+          _addressController.clear();
+          _noteController.clear();
+          _receiverPhoneController.clear();
+
+          // Navigate back or to home
+
+          context.pop();
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSubmitting = false;
+          });
+        }
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('الرجاء إدخال عنوان التوصيل'),
+          content: Text('الرجاء ملء جميع الحقول المطلوبة'),
           backgroundColor: Colors.red,
         ),
       );
@@ -51,81 +114,16 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<CartCubit, CartState>(
-        builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.items.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return Stack(
-            children: [
-              SafeArea(
-                child: Column(
-                  children: [
-                    _buildHeader(context, state),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(bottom: 350),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildCartItems(context, state),
-                            // _buildPromoCode(context),
-                            _buildDeliveryAddress(context),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
-        builder: (context, state) {
-          if (state.items.isEmpty) {
-            return const SizedBox.shrink();
-          }
-          return _buildBottomSection(context, state);
-        },
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, CartState state) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF7F8F7),
-        border: Border(bottom: BorderSide(color: Color(0xFFE5E8E6))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEFF0EF),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_back,
-                color: Color(0xFF4A5250),
-                size: 24,
-              ),
-            ),
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) => Scaffold(
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        appBar: AppBar(
+          leading: PhosphorIcon(
+            PhosphorIcons.arrowLeft(),
+            size: 24,
+            color: colorScheme.onSurface,
           ),
-          const Text(
+          title: const Text(
             'سلة التسوق',
             style: TextStyle(
               fontSize: 20,
@@ -133,25 +131,60 @@ class _CartPageState extends State<CartPage> {
               color: Color(0xFF4A5250),
             ),
           ),
-          GestureDetector(
-            onTap: state.items.isEmpty
-                ? null
-                : () => _showClearCartDialog(context),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEFF0EF),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Color(0xFFC87A7A),
-                size: 20,
+          actions: [
+            GestureDetector(
+              onTap: state.items.isEmpty
+                  ? null
+                  : () => _showClearCartDialog(context),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEFF0EF),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline,
+                  color: Color(0xFFC87A7A),
+                  size: 20,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+          ],
+        ),
+        body: Builder(
+          builder: (context) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state.items.isEmpty) {
+              return _buildEmptyState(context);
+            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 350),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCartItems(context, state),
+                  // _buildPromoCode(context),
+                  _buildDeliveryAddress(context),
+                ],
+              ),
+            );
+          },
+        ),
+
+        bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            if (state.items.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            return _buildBottomSection(context, state);
+          },
+        ),
       ),
     );
   }
@@ -325,7 +358,7 @@ class _CartPageState extends State<CartPage> {
                           ),
                           // Price
                           Text(
-                            '${_formatPrice(item.totalPrice)} د.ع',
+                            '${formatPrice(item.totalPrice)} د.ع',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -396,16 +429,10 @@ class _CartPageState extends State<CartPage> {
                       controller: _addressController,
                       maxLines: 3,
                       minLines: 1,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF4A5250),
-                      ),
+
                       decoration: const InputDecoration(
                         hintText: 'أدخل عنوان التوصيل الكامل...',
-                        hintStyle: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF8A9290),
-                        ),
+
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
                       ),
@@ -424,6 +451,182 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          // Receiver Type Dropdown
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFBFA),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E8E6),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.person_outline,
+                    color: Color(0xFF005292),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _receiverType,
+                    decoration: const InputDecoration(
+                      hintText: 'اختر المستلم',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'لنفسي', child: Text('لنفسي')),
+                      DropdownMenuItem(value: 'لشخص اخر', child: Text('لصديق')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _receiverType = value ?? 'لنفسي';
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFBFA),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E8E6),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: PhosphorIcon(
+                    textDirection: TextDirection.ltr,
+                    PhosphorIcons.phone(PhosphorIconsStyle.duotone),
+                    color: Color(0xFF005292),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _receiverPhoneController,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF4A5250),
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'ادخل رقم هاتف المستلم...',
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF8A9290),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'الرجاء إدخال رقم المستلم';
+                      }
+                      final phone = value.trim();
+                      // Check if it's a valid number
+                      if (int.tryParse(phone) == null) {
+                        return 'رقم الهاتف يجب أن يحتوي على أرقام فقط';
+                      }
+                      // Check length (11 digits for Iraqi numbers)
+                      if (phone.length != 11) {
+                        return 'رقم الهاتف يجب أن يكون 11 رقم';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFBFA),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E8E6),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.note_outlined,
+                    color: Color(0xFF005292),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _noteController,
+                    maxLines: 3,
+                    minLines: 1,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF4A5250),
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'ملاحظات إضافية (اختياري)...',
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF8A9290),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -432,8 +635,8 @@ class _CartPageState extends State<CartPage> {
   Widget _buildBottomSection(BuildContext context, CartState state) {
     final cartCubit = context.read<CartCubit>();
     final subtotal = cartCubit.totalAmount;
-    final deliveryFee = 5000.0;
-    final total = subtotal + deliveryFee;
+
+    final total = subtotal;
 
     return Container(
       decoration: BoxDecoration(
@@ -455,15 +658,11 @@ class _CartPageState extends State<CartPage> {
             children: [
               _buildSummaryRow(
                 'المجموع الفرعي (${cartCubit.itemCount} منتجات)',
-                '${_formatPrice(subtotal)} د.ع',
+                '${formatPrice(subtotal)} د.ع',
                 false,
               ),
               const SizedBox(height: 12),
-              _buildSummaryRow(
-                'رسوم التوصيل',
-                '${_formatPrice(deliveryFee)} د.ع',
-                false,
-              ),
+              _buildSummaryRow('رسوم التوصيل', 'مجاني', false),
               const SizedBox(height: 12),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -472,16 +671,9 @@ class _CartPageState extends State<CartPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'الإجمالي',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A5250),
-                    ),
-                  ),
+                  Text('الإجمالي', style: textTheme.titleLarge),
                   Text(
-                    '${_formatPrice(total)} د.ع',
+                    '${formatPrice(total)} د.ع',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -492,12 +684,14 @@ class _CartPageState extends State<CartPage> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _handleCheckout(context),
+                onTap: _isSubmitting ? null : () => _handleCheckout(context),
                 child: Container(
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF005292),
+                    color: _isSubmitting
+                        ? const Color(0xFF005292).withValues(alpha: 0.6)
+                        : const Color(0xFF005292),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -507,25 +701,38 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ],
                   ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'تأكيد الطلب',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  child: _isSubmitting
+                      ? const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'تأكيد الطلب',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -569,8 +776,9 @@ class _CartPageState extends State<CartPage> {
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Spacer(),
           Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
@@ -595,6 +803,8 @@ class _CartPageState extends State<CartPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
+
+          Spacer(),
         ],
       ),
     );

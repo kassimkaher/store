@@ -52,16 +52,14 @@ class AppPermissions extends Equatable {
 class StoreConfig extends Equatable {
   final String apiBaseUrl;
   final String? apiKey;
-  final AppCredentials credentials;
-  final AppPermissions permissions;
+
   final bool enableLogging;
   final int requestTimeoutSeconds;
 
   const StoreConfig({
     required this.apiBaseUrl,
     this.apiKey,
-    required this.credentials,
-    this.permissions = const AppPermissions(),
+
     this.enableLogging = false,
     this.requestTimeoutSeconds = 30,
   });
@@ -70,8 +68,7 @@ class StoreConfig extends Equatable {
   List<Object?> get props => [
     apiBaseUrl,
     apiKey,
-    credentials,
-    permissions,
+
     enableLogging,
     requestTimeoutSeconds,
   ];

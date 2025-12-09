@@ -1,7 +1,10 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../../core/utils/result.dart';
 import '../entities/category_entity.dart';
 import '../repositories/category_repository.dart';
 
+@lazySingleton
 class GetAllCategoriesUseCase {
   final CategoryRepository repository;
 

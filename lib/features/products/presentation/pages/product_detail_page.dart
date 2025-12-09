@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:store_web/config/store_app.dart';
 import 'package:store_web/core/utils/functions/price.dart';
 
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
+import '../../../../utils/injector/injector.dart';
 import '../../../auth/cubit/auth_cubit.dart';
 import '../../../bookmarks/presentation/cubit/bookmark_cubit.dart';
 import '../../../bookmarks/presentation/cubit/bookmark_state.dart';
@@ -114,11 +114,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         children: [
           GestureDetector(
             onTap: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.go('/');
-              }
+              context.pop();
             },
             child: Container(
               width: 40,

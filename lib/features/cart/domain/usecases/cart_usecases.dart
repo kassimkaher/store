@@ -1,15 +1,17 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/failures.dart';
 import '../entities/cart_entity.dart';
 import '../repositories/cart_repository.dart';
 
+@lazySingleton
 class GetMyCartOrdersUseCase {
   final CartRepository repository;
 
   GetMyCartOrdersUseCase(this.repository);
 
-  Future<Either<Failure, List<CartOrder>>> call({
+  Future<Either<Failure, List<CartOrderEntity>>> call({
     required String storeId,
     int page = 1,
     int limit = 10,
@@ -24,6 +26,7 @@ class GetMyCartOrdersUseCase {
   }
 }
 
+@lazySingleton
 class SubmitCartUseCase {
   final CartRepository repository;
 

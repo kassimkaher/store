@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:store_web/config/store_app.dart';
+import 'package:store_web/core/utils/functions/price.dart';
 
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
+import '../../../../utils/injector/injector.dart';
 import '../../../auth/cubit/auth_cubit.dart';
 import '../../domain/entities/cart_entity.dart';
 import '../cubit/order_history_cubit.dart';
@@ -14,7 +18,7 @@ class OrderHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final storeId = context.read<AuthCubit>().currentAuthData?.storeId ?? '';
+    final storeId = getIt<AuthCubit>().currentAuthData?.storeId ?? '';
 
     return BlocProvider(
       create: (context) =>
@@ -33,11 +37,16 @@ class _OrderHistoryContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF7F8F7),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF4A5250)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            context.pop();
+          },
+          icon: PhosphorIcon(
+            PhosphorIcons.arrowLeft(),
+            size: 24,
+            color: colorScheme.onSurface,
+          ),
         ),
         title: const Text(
           'الطلبات السابقة',
@@ -131,14 +140,9 @@ class _OrderHistoryContent extends StatelessWidget {
 }
 
 class _OrderCard extends StatelessWidget {
-  final CartOrder order;
+  final CartOrderEntity order;
 
   const _OrderCard({required this.order});
-
-  String _formatPrice(double price) {
-    final formatter = NumberFormat('#,###');
-    return formatter.format(price.round());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +234,7 @@ class _OrderCard extends StatelessWidget {
                   _buildInfoRow('ملاحظة', order.note!),
                 ],
                 const Divider(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
                   children: [
                     const Text(
                       'المبلغ الإجمالي',
@@ -242,7 +245,7 @@ class _OrderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${_formatPrice(_calculateTotal())} د.ع',
+                      '${formatPrice(_calculateTotal())} د.ع',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -361,7 +364,10 @@ class _ProductItem extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: product.image != null
-                ? CustomCachedImage(imageUrl: product.image!, fit: BoxFit.cover)
+                ? CustomCachedImage(
+                    imageUrl: product.contentUrl + product.image!,
+                    fit: BoxFit.cover,
+                  )
                 : const Icon(
                     Icons.image_outlined,
                     size: 32,
@@ -400,7 +406,7 @@ class _ProductItem extends StatelessWidget {
         ),
         // Price
         Text(
-          '\${_formatPrice(product.totalPrice)} د.ع',
+          '${formatPrice(product.totalPrice)} د.ع',
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_web/core/theme/theme_app.dart';
 
-import '../core/di/injection_container.dart';
 import '../core/utils/app_credentials.dart';
 import '../features/bookmarks/presentation/cubit/bookmark_cubit.dart';
 import '../features/cart/presentation/cubit/cart_cubit.dart';
+import '../utils/injector/injector.dart';
 import 'routes/app_routes.dart';
 
 // Global theme configuration based on HTML design

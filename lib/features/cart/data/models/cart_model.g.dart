@@ -45,7 +45,7 @@ Map<String, dynamic> _$CartRequestModelToJson(CartRequestModel instance) =>
 CartOrderProductModel _$CartOrderProductModelFromJson(
         Map<String, dynamic> json) =>
     CartOrderProductModel(
-      categoryName: json['categoryName'] as String,
+      categoryName: json['categoryName'] as String?,
       name: json['name'] as String,
       price: (json['price'] as num).toDouble(),
       image: json['image'] as String?,

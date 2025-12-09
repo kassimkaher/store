@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:store_web/features/auth/cubit/auth_cubit.dart';
 
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_search_bar.dart';
 import '../../../../core/widgets/product_card.dart';
+import '../../../../utils/injector/injector.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../domain/entities/search_result_entity.dart';

@@ -1,7 +1,10 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../../core/utils/result.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
+@lazySingleton
 class GetMostPurchasedUseCase {
   final ProductRepository repository;
 
@@ -20,6 +23,7 @@ class GetMostPurchasedUseCase {
   }
 }
 
+@lazySingleton
 class GetProductDetailsUseCase {
   final ProductRepository repository;
 
@@ -33,6 +37,7 @@ class GetProductDetailsUseCase {
   }
 }
 
+@lazySingleton
 class GetProductsByCategoryUseCase {
   final ProductRepository repository;
 

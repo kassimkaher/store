@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class CartOrder extends Equatable {
+class CartOrderEntity extends Equatable {
   final String id;
   final String cartId;
   final String status;
@@ -13,8 +13,9 @@ class CartOrder extends Equatable {
   final LocationMap locationMap;
   final List<CartOrderProduct> products;
   final DateTime? createdAt;
+  final String? contentUrl;
 
-  const CartOrder({
+  const CartOrderEntity({
     required this.id,
     required this.cartId,
     required this.status,
@@ -27,6 +28,7 @@ class CartOrder extends Equatable {
     required this.locationMap,
     required this.products,
     this.createdAt,
+    this.contentUrl,
   });
 
   @override
@@ -43,6 +45,7 @@ class CartOrder extends Equatable {
     locationMap,
     products,
     createdAt,
+    contentUrl,
   ];
 }
 
@@ -52,6 +55,7 @@ class CartOrderProduct extends Equatable {
   final double price;
   final String? image;
   final int quantity;
+  final String contentUrl;
 
   const CartOrderProduct({
     required this.categoryName,
@@ -59,6 +63,7 @@ class CartOrderProduct extends Equatable {
     required this.price,
     this.image,
     required this.quantity,
+    required this.contentUrl,
   });
 
   double get totalPrice => price * quantity;

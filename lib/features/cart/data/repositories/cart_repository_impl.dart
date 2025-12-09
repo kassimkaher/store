@@ -36,7 +36,7 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<Either<Failure, List<CartOrder>>> getMyCartOrders({
+  Future<Either<Failure, List<CartOrderEntity>>> getMyCartOrders({
     required String storeId,
     int page = 1,
     int limit = 10,
@@ -48,9 +48,6 @@ class CartRepositoryImpl implements CartRepository {
       limit: limit,
       status: status,
     );
-    return result.fold(
-      (failure) => Left(failure),
-      (data) => Right(data),
-    );
+    return result.fold((failure) => Left(failure), (data) => Right(data));
   }
 }

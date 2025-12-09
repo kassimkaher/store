@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CartState {
   List<CartItem> get items => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  String? get errorMessage => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CartStateCopyWith<CartState> get copyWith =>
@@ -29,7 +30,7 @@ abstract class $CartStateCopyWith<$Res> {
   factory $CartStateCopyWith(CartState value, $Res Function(CartState) then) =
       _$CartStateCopyWithImpl<$Res, CartState>;
   @useResult
-  $Res call({List<CartItem> items, bool isLoading});
+  $Res call({List<CartItem> items, bool isLoading, String? errorMessage});
 }
 
 /// @nodoc
@@ -47,6 +48,7 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
   $Res call({
     Object? items = null,
     Object? isLoading = null,
+    Object? errorMessage = freezed,
   }) {
     return _then(_value.copyWith(
       items: null == items
@@ -57,6 +59,10 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -69,7 +75,7 @@ abstract class _$$CartStateImplCopyWith<$Res>
       __$$CartStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CartItem> items, bool isLoading});
+  $Res call({List<CartItem> items, bool isLoading, String? errorMessage});
 }
 
 /// @nodoc
@@ -85,6 +91,7 @@ class __$$CartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? items = null,
     Object? isLoading = null,
+    Object? errorMessage = freezed,
   }) {
     return _then(_$CartStateImpl(
       items: null == items
@@ -95,6 +102,10 @@ class __$$CartStateImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -103,7 +114,9 @@ class __$$CartStateImplCopyWithImpl<$Res>
 
 class _$CartStateImpl implements _CartState {
   const _$CartStateImpl(
-      {final List<CartItem> items = const [], this.isLoading = false})
+      {final List<CartItem> items = const [],
+      this.isLoading = false,
+      this.errorMessage})
       : _items = items;
 
   final List<CartItem> _items;
@@ -118,10 +131,12 @@ class _$CartStateImpl implements _CartState {
   @override
   @JsonKey()
   final bool isLoading;
+  @override
+  final String? errorMessage;
 
   @override
   String toString() {
-    return 'CartState(items: $items, isLoading: $isLoading)';
+    return 'CartState(items: $items, isLoading: $isLoading, errorMessage: $errorMessage)';
   }
 
   @override
@@ -131,12 +146,14 @@ class _$CartStateImpl implements _CartState {
             other is _$CartStateImpl &&
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_items), isLoading);
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_items), isLoading, errorMessage);
 
   @JsonKey(ignore: true)
   @override
@@ -146,13 +163,17 @@ class _$CartStateImpl implements _CartState {
 }
 
 abstract class _CartState implements CartState {
-  const factory _CartState({final List<CartItem> items, final bool isLoading}) =
-      _$CartStateImpl;
+  const factory _CartState(
+      {final List<CartItem> items,
+      final bool isLoading,
+      final String? errorMessage}) = _$CartStateImpl;
 
   @override
   List<CartItem> get items;
   @override
   bool get isLoading;
+  @override
+  String? get errorMessage;
   @override
   @JsonKey(ignore: true)
   _$$CartStateImplCopyWith<_$CartStateImpl> get copyWith =>

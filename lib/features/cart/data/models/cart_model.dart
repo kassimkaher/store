@@ -49,7 +49,7 @@ class CartRequestModel {
 
 @JsonSerializable()
 class CartOrderProductModel {
-  final String categoryName;
+  final String? categoryName;
   final String name;
   final double price;
   final String? image;
@@ -68,13 +68,14 @@ class CartOrderProductModel {
 
   Map<String, dynamic> toJson() => _$CartOrderProductModelToJson(this);
 
-  CartOrderProduct toEntity() {
+  CartOrderProduct toEntity(String contentUrl) {
     return CartOrderProduct(
-      categoryName: categoryName,
+      categoryName: categoryName ?? "",
       name: name,
       price: price,
       image: image,
       quantity: quantity,
+      contentUrl: contentUrl,
     );
   }
 }
@@ -138,8 +139,8 @@ class CartOrderModel {
 
   Map<String, dynamic> toJson() => _$CartOrderModelToJson(this);
 
-  CartOrder toEntity() {
-    return CartOrder(
+  CartOrderEntity toEntity([String contentUrl = '']) {
+    return CartOrderEntity(
       id: id,
       cartId: cartId,
       status: status,
@@ -150,8 +151,9 @@ class CartOrderModel {
       paymentMethod: paymentMethod,
       address: address,
       locationMap: locationMap.toEntity(),
-      products: products.map((p) => p.toEntity()).toList(),
+      products: products.map((p) => p.toEntity(contentUrl)).toList(),
       createdAt: createdAt,
+      contentUrl: contentUrl,
     );
   }
 }

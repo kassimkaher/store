@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:store_web/core/widgets/product_card.dart';
 
-import '../../../../core/di/injection_container.dart';
+import '../../../../utils/injector/injector.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
 import '../../../products/presentation/cubit/products_cubit.dart';
 import '../../../products/presentation/cubit/products_state.dart';

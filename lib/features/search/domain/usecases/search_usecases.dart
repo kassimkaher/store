@@ -1,9 +1,11 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/failures.dart';
 import '../entities/search_result_entity.dart';
 import '../repositories/search_repository.dart';
 
+@lazySingleton
 class SearchAllUseCase {
   final SearchRepository repository;
 
@@ -27,6 +29,7 @@ class SearchAllUseCase {
   }
 }
 
+@lazySingleton
 class SearchProductsUseCase {
   final SearchRepository repository;
 
@@ -50,6 +53,7 @@ class SearchProductsUseCase {
   }
 }
 
+@lazySingleton
 class SearchOffersInResultsUseCase {
   final SearchRepository repository;
 
