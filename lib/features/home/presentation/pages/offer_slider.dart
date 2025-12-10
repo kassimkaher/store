@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/skeleton_widgets.dart';
 import '../../../offers/presentation/cubit/offers_cubit.dart';
 import '../../../offers/presentation/cubit/offers_state.dart';
 import '../../../offers/presentation/widgets/offers_slider_widget.dart';
@@ -14,10 +15,7 @@ class OfferSlider extends StatelessWidget {
       builder: (context, state) {
         return state.when(
           initial: () => const SizedBox.shrink(),
-          loading: () => const SizedBox(
-            height: 180,
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          loading: () => const OfferSliderSkeleton(),
           loaded: (offers) => OffersSliderWidget(offers: offers),
           error: (message) => SizedBox(
             height: 180,

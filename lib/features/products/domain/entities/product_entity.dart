@@ -1,3 +1,5 @@
+import 'package:store_web/features/search/domain/entities/search_result_entity.dart';
+
 class ProductEntity {
   final String id;
   final String name;
@@ -8,6 +10,7 @@ class ProductEntity {
   final String? categoryName;
   final bool? isLiked;
   final String? baseUrl;
+  final SearchResultType type;
 
   const ProductEntity({
     required this.id,
@@ -19,5 +22,6 @@ class ProductEntity {
     this.categoryName,
     this.isLiked,
     this.baseUrl,
+    this.type = SearchResultType.product,
   });
 }

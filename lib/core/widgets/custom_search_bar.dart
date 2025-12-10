@@ -40,7 +40,7 @@ class CustomSearchBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.outline.withAlpha(100),
+            color: colorScheme.outline.withAlpha(50),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

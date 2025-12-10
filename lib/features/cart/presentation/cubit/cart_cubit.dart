@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_web/features/cart/domain/entities/cart_entity.dart';
 
+import '../../../auth/cubit/auth_cubit.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../domain/usecases/cart_usecases.dart';
 import 'cart_item.dart';
@@ -12,11 +13,16 @@ import 'cart_state.dart';
 
 @singleton
 class CartCubit extends Cubit<CartState> {
-  static const String _cartKey = 'cart_items';
   final SubmitCartUseCase submitCartUseCase;
+  final AuthCubit authCubit;
 
-  CartCubit(this.submitCartUseCase) : super(const CartState()) {
+  CartCubit(this.submitCartUseCase, this.authCubit) : super(const CartState()) {
     _loadCart();
+  }
+
+  String get _cartKey {
+    final storeId = authCubit.getStorId() ?? 'default';
+    return '${storeId}_cart_items';
   }
 
   Future<void> _loadCart() async {

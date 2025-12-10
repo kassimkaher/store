@@ -105,50 +105,7 @@ class _CartPageState extends State<CartPage> {
       },
       child: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) => Scaffold(
-          backgroundColor: colorScheme.surfaceContainerHighest,
-          appBar: AppBar(
-            leading: widget.isBackButtonVisible
-                ? IconButton(
-                    icon: PhosphorIcon(
-                      PhosphorIcons.arrowLeft(),
-                      size: 24,
-                      color: colorScheme.onSurface,
-                    ),
-                    onPressed: () {
-                      context.pop();
-                    },
-                  )
-                : null,
-            title: const Text(
-              'سلة التسوق',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A5250),
-              ),
-            ),
-            actions: [
-              GestureDetector(
-                onTap: state.items.isEmpty
-                    ? null
-                    : () => _showClearCartDialog(context),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEFF0EF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.delete_outline,
-                    color: Color(0xFFC87A7A),
-                    size: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
+          backgroundColor: colorScheme.surfaceContainerHighest.withAlpha(150),
           body: Builder(
             builder: (context) {
               if (state.isLoading) {
@@ -199,12 +156,12 @@ class _CartPageState extends State<CartPage> {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFFAFBFA),
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
+                  blurRadius: 2,
                   offset: const Offset(0, 2),
                 ),
               ],

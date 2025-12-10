@@ -15,24 +15,24 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Load authentication data from storage
   Future<void> loadAuthData() async {
-    // emit(
-    //   AuthState.authenticated(
-    //     data: AuthData(
-    //       token:
-    //           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGQxMDlkYjg5YmZjNjczMGQ1YzNlMjciLCJuYW1lIjoiTGFtYXNzdSIsImVtYWlsIjoib253ZXJBcHAyM0BhbG5hc2ltLmNvbSIsInBob25lIjoiMDc4MTIzNDU2NzgiLCJ0eXBlIjoib3duZXIiLCJjZW50ZXJfaWQiOiI2N2I0NDUxZmU5ZGI2NGUwNDUxZGNmODIiLCJtYXJrZXRpbmdfY29tcGFueV9pZCI6bnVsbCwibWFya2V0aW5nX2NvbXBhbnlfYnJhbmNoX25hbWUiOm51bGwsImlhdCI6MTc2NTIyMzE0OH0.NfLSmr03bDJ5vxqeRmGpM50AYt4HypMd1cSaAl3Z9cM",
-    //       id: "22",
-    //       name: "test kassi,",
-    //       email: "email",
-    //       phone: "07722727272",
-    //       storeName: "storeName",
-    //       storeId: "6928976e1dbcf278d2271186",
-    //       storeUrl: "storeUrl",
-    //       storeLogo: "storeLogo",
-    //       contentUrl: "contentUrl",
-    //     ),
-    //   ),
-    // );
-    // return;
+    emit(
+      AuthState.authenticated(
+        data: AuthData(
+          token:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGQxMDlkYjg5YmZjNjczMGQ1YzNlMjciLCJuYW1lIjoiTGFtYXNzdSIsImVtYWlsIjoib253ZXJBcHAyM0BhbG5hc2ltLmNvbSIsInBob25lIjoiMDc4MTIzNDU2NzgiLCJ0eXBlIjoib3duZXIiLCJjZW50ZXJfaWQiOiI2N2I0NDUxZmU5ZGI2NGUwNDUxZGNmODIiLCJtYXJrZXRpbmdfY29tcGFueV9pZCI6bnVsbCwibWFya2V0aW5nX2NvbXBhbnlfYnJhbmNoX25hbWUiOm51bGwsImlhdCI6MTc2NTIyMzE0OH0.NfLSmr03bDJ5vxqeRmGpM50AYt4HypMd1cSaAl3Z9cM",
+          id: "22",
+          name: "test kassi,",
+          email: "email",
+          phone: "07722727272",
+          storeName: "storeName",
+          storeId: "6928976e1dbcf278d2271186",
+          storeUrl: "storeUrl",
+          storeLogo: "storeLogo",
+          contentUrl: "contentUrl",
+        ),
+      ),
+    );
+    return;
     try {
       emit(const AuthState.loading());
 

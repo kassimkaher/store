@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/search_result_entity.dart';
 
 class SearchResultCard extends StatelessWidget {
-  final SearchResult result;
+  final SearchResultEntity result;
   final String storeId;
 
   const SearchResultCard({

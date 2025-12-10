@@ -4,16 +4,22 @@ import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../auth/cubit/auth_cubit.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import 'bookmark_item.dart';
 import 'bookmark_state.dart';
 
 @singleton
 class BookmarkCubit extends Cubit<BookmarkState> {
-  static const String _bookmarkKey = 'bookmark_items';
+  final AuthCubit authCubit;
 
-  BookmarkCubit() : super(const BookmarkState()) {
+  BookmarkCubit(this.authCubit) : super(const BookmarkState()) {
     _loadBookmarks();
+  }
+
+  String get _bookmarkKey {
+    final storeId = authCubit.getStorId() ?? 'default';
+    return '${storeId}_bookmark_items';
   }
 
   Future<void> _loadBookmarks() async {

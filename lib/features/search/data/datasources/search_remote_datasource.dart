@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
+import 'package:store_web/features/products/domain/entities/product_entity.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/dio_client.dart';
@@ -10,21 +11,14 @@ import '../../../products/data/models/product_model.dart';
 import '../../domain/entities/search_result_entity.dart';
 
 abstract class SearchRemoteDataSource {
-  Future<Either<Failure, List<SearchResult>>> searchProducts({
+  Future<Either<Failure, List<ProductEntity>>> searchProducts({
     required String storeId,
     required String query,
     int page = 1,
     int limit = 20,
   });
 
-  Future<Either<Failure, List<SearchResult>>> searchOffers({
-    required String storeId,
-    required String query,
-    int page = 1,
-    int limit = 20,
-  });
-
-  Future<Either<Failure, List<SearchResult>>> searchAll({
+  Future<Either<Failure, List<SearchResultEntity>>> searchOffers({
     required String storeId,
     required String query,
     int page = 1,
@@ -35,7 +29,7 @@ abstract class SearchRemoteDataSource {
 @LazySingleton(as: SearchRemoteDataSource)
 class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   @override
-  Future<Either<Failure, List<SearchResult>>> searchProducts({
+  Future<Either<Failure, List<ProductEntity>>> searchProducts({
     required String storeId,
     required String query,
     int page = 1,
@@ -53,25 +47,16 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
           );
 
       if (response.response.statusCode == 200 &&
-          response.data['status'] == 'success') {
-        final List<dynamic> productsData = response.data['data']['data'] ?? [];
+          response.data['error'] == false) {
+        final List<dynamic> productsData =
+            response.data['results']['data'] ?? [];
         final products = productsData
             .map((json) => ProductModel.fromJson(json))
             .toList();
 
         return Right(
           products
-              .map(
-                (product) => SearchResult(
-                  id: product.id,
-                  title: product.name,
-                  description: product.description,
-                  image: product.image,
-                  price: product.price,
-                  type: SearchResultType.product,
-                  categoryName: product.categoryName,
-                ),
-              )
+              .map((product) => product.toEntity(response.data['r2_base_url']))
               .toList(),
         );
       } else {
@@ -89,7 +74,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, List<SearchResult>>> searchOffers({
+  Future<Either<Failure, List<SearchResultEntity>>> searchOffers({
     required String storeId,
     required String query,
     int page = 1,
@@ -113,7 +98,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
         return Right(
           offers
               .map(
-                (offer) => SearchResult(
+                (offer) => SearchResultEntity(
                   id: offer.id,
                   title: offer.note ?? 'عرض خاص',
                   description: offer.note,
@@ -135,27 +120,5 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
-  }
-
-  @override
-  Future<Either<Failure, List<SearchResult>>> searchAll({
-    required String storeId,
-    required String query,
-    int page = 1,
-    int limit = 20,
-  }) async {
-    // Search both products and offers concurrently
-    final results = await Future.wait([
-      searchProducts(storeId: storeId, query: query, page: page, limit: 10),
-      searchOffers(storeId: storeId, query: query, page: page, limit: 10),
-    ]);
-
-    // Combine both results
-    return results[0].flatMap((productResults) {
-      return results[1].map((offerResults) {
-        final allResults = [...productResults, ...offerResults];
-        return allResults.take(limit).toList();
-      });
-    });
   }
 }

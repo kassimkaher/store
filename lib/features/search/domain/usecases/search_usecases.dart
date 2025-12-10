@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
+import 'package:store_web/features/products/domain/entities/product_entity.dart';
 
 import '../../../../core/error/failures.dart';
 import '../entities/search_result_entity.dart';
@@ -11,7 +12,7 @@ class SearchAllUseCase {
 
   SearchAllUseCase({required this.repository});
 
-  Future<Either<Failure, List<SearchResult>>> call({
+  Future<Either<Failure, List<ProductEntity>>> call({
     required String storeId,
     required String query,
     int page = 1,
@@ -20,7 +21,7 @@ class SearchAllUseCase {
     if (query.trim().isEmpty) {
       return const Right([]);
     }
-    return await repository.searchAll(
+    return await repository.searchProducts(
       storeId: storeId,
       query: query,
       page: page,
@@ -35,7 +36,7 @@ class SearchProductsUseCase {
 
   SearchProductsUseCase({required this.repository});
 
-  Future<Either<Failure, List<SearchResult>>> call({
+  Future<Either<Failure, List<ProductEntity>>> call({
     required String storeId,
     required String query,
     int page = 1,
@@ -59,7 +60,7 @@ class SearchOffersInResultsUseCase {
 
   SearchOffersInResultsUseCase({required this.repository});
 
-  Future<Either<Failure, List<SearchResult>>> call({
+  Future<Either<Failure, List<SearchResultEntity>>> call({
     required String storeId,
     required String query,
     int page = 1,

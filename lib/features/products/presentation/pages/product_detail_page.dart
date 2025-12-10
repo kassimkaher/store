@@ -45,7 +45,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 children: [
                   Column(
                     children: [
-                      _buildHeader(context, product),
+                      //  _buildHeader(context, product),
                       Expanded(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.only(bottom: 200),
@@ -132,41 +132,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           Row(
             children: [
-              BlocBuilder<BookmarkCubit, BookmarkState>(
-                builder: (context, state) {
-                  final isBookmarked = context
-                      .read<BookmarkCubit>()
-                      .isBookmarked(product.id);
-                  return GestureDetector(
-                    onTap: () {
-                      context.read<BookmarkCubit>().toggleBookmark(product);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isBookmarked
-                                ? 'تمت إزالة ${product.name} من المحفوظات'
-                                : 'تمت إضافة ${product.name} إلى المحفوظات',
-                          ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFEFF0EF),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isBookmarked ? Icons.favorite : Icons.favorite_border,
-                        color: const Color(0xFF4A5250),
-                        size: 24,
-                      ),
-                    ),
-                  );
-                },
-              ),
+              FavoritWidget(product: product),
               const SizedBox(width: 12),
             ],
           ),
@@ -180,7 +146,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
+      child: Stack(
         children: [
           // Main Image
           AspectRatio(
@@ -206,6 +172,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
+          Positioned(top: 16, left: 16, child: FavoritWidget(product: product)),
         ],
       ),
     );
@@ -440,6 +407,50 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class FavoritWidget extends StatelessWidget {
+  const FavoritWidget({super.key, required this.product});
+  final ProductEntity product;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BookmarkCubit, BookmarkState>(
+      builder: (context, state) {
+        final isBookmarked = context.read<BookmarkCubit>().isBookmarked(
+          product.id,
+        );
+        return GestureDetector(
+          onTap: () {
+            context.read<BookmarkCubit>().toggleBookmark(product);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  isBookmarked
+                      ? 'تمت إزالة ${product.name} من المحفوظات'
+                      : 'تمت إضافة ${product.name} إلى المحفوظات',
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Color(0xFFEFF0EF),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isBookmarked ? Icons.favorite : Icons.favorite_border,
+              color: const Color(0xFF4A5250),
+              size: 24,
+            ),
+          ),
+        );
+      },
     );
   }
 }

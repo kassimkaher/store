@@ -12,10 +12,9 @@ class BookmarksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: false,
         title: const Text(
           'المنتجات المحفوظة',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

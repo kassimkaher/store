@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:store_web/config/store_app.dart';
 import 'package:store_web/core/utils/functions/price.dart';
 
 import '../../../../core/widgets/custom_cached_image.dart';
@@ -38,16 +35,18 @@ class _OrderHistoryContent extends StatelessWidget {
       backgroundColor: const Color(0xFFF7F8F7),
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: PhosphorIcon(
-            PhosphorIcons.arrowLeft(),
-            size: 24,
-            color: colorScheme.onSurface,
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     context.pop();
+        //   },
+        //   icon: PhosphorIcon(
+        //     PhosphorIcons.arrowLeft(),
+        //     size: 24,
+        //     color: colorScheme.onSurface,
+        //   ),
+        // ),
+        centerTitle: false,
         title: const Text(
           'الطلبات السابقة',
           style: TextStyle(
@@ -63,6 +62,7 @@ class _OrderHistoryContent extends StatelessWidget {
               context.read<OrderHistoryCubit>().refreshOrders();
             },
           ),
+          const SizedBox(width: 14),
         ],
       ),
       body: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(

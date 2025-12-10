@@ -82,7 +82,7 @@ class _SearchPageState extends State<_SearchPageContent> {
     context.read<SearchCubit>().clear();
   }
 
-  List<SearchResult> _filterResults(List<SearchResult> results) {
+  List<ProductEntity> _filterResults(List<ProductEntity> results) {
     switch (_currentFilter) {
       case SearchFilter.products:
         return results
@@ -98,12 +98,12 @@ class _SearchPageState extends State<_SearchPageContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'البحث',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: const Text(
+      //     'البحث',
+      //     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      //   ),
+      // ),
       body: SafeArea(
         child: Column(
           children: [
@@ -141,21 +141,7 @@ class _SearchPageState extends State<_SearchPageContent> {
                             ),
                         itemCount: filteredResults.length,
                         itemBuilder: (context, index) {
-                          final result = filteredResults[index];
-                          final product = ProductEntity(
-                            id: result.id,
-                            name: result.title,
-                            price: result.price ?? 0,
-                            description: result.description,
-                            image: result.image,
-                            categoryId: null,
-                            categoryName:
-                                result.type == SearchResultType.product
-                                ? 'منتج'
-                                : 'عرض',
-                            isLiked: false,
-                            baseUrl: '',
-                          );
+                          final product = filteredResults[index];
 
                           return ProductCard(
                             productData: product,

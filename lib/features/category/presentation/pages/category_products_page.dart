@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_web/config/store_app.dart';
 import 'package:store_web/core/widgets/product_card.dart';
 
 import '../../../../utils/injector/injector.dart';
@@ -90,7 +91,8 @@ class _CategoryProductsContentState extends State<_CategoryProductsContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        automaticallyImplyLeading: false,
+        centerTitle: false,
         title: Text(
           _selectedCategoryName,
           style: const TextStyle(
@@ -98,10 +100,7 @@ class _CategoryProductsContentState extends State<_CategoryProductsContent> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: BlocBuilder<CategoriesCubit, CategoriesState>(
@@ -138,8 +137,8 @@ class _CategoryProductsContentState extends State<_CategoryProductsContent> {
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Colors.blue
-                                    : Colors.grey[200],
+                                    ? colorScheme.primary
+                                    : colorScheme.surfaceContainer,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(

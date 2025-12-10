@@ -139,6 +139,7 @@ class StoreApp extends StatelessWidget {
 
         theme: AppTheme.lightTheme,
         locale: Locale("ar"),
+        debugShowCheckedModeBanner: false,
         supportedLocales: const [
           Locale('ar'), // English
           Locale('en'), // Spanish
@@ -149,16 +150,17 @@ class StoreApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         routerConfig: router,
-        builder: (context, child) => Scaffold(
-          appBar: AppBar(
-            backgroundColor: colorScheme.surface,
-            title: Text(""),
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: Colors.black.withAlpha(0),
-            shadowColor: Colors.teal.withAlpha(0),
-          ),
-          body: Padding(padding: EdgeInsets.only(top: 0), child: child!),
-        ),
+        // builder: (context, child) => Scaffold(
+        //   appBar: AppBar(
+        //     // backgroundColor: colorScheme.error,
+
+        //     // surfaceTintColor: Colors.transparent,
+        //     // foregroundColor: Colors.black.withAlpha(0),
+        //     // shadowColor: Colors.teal.withAlpha(0),
+        //     // flexibleSpace: Container(color: colorScheme.error),
+        //   ),
+        //   body: Padding(padding: EdgeInsets.only(top: 0), child: child!),
+        //  ),
       ),
     );
   }

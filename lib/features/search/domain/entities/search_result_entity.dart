@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class SearchResult extends Equatable {
+class SearchResultEntity extends Equatable {
   final String id;
   final String title;
   final String? description;
@@ -9,7 +9,7 @@ class SearchResult extends Equatable {
   final SearchResultType type;
   final String? categoryName;
 
-  const SearchResult({
+  const SearchResultEntity({
     required this.id,
     required this.title,
     this.description,

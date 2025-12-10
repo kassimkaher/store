@@ -75,7 +75,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i454.MiniAppStorageService>(
         () => _i454.MiniAppStorageService());
-    gh.singleton<_i586.BookmarkCubit>(() => _i586.BookmarkCubit());
     gh.lazySingleton<_i973.CartRemoteDataSource>(
         () => _i973.CartRemoteDataSourceImpl());
     gh.lazySingleton<_i785.ProductRemoteDataSource>(
@@ -104,6 +103,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i252.CartRepositoryImpl(gh<_i973.CartRemoteDataSource>()));
     gh.lazySingleton<_i52.ProductRepository>(
         () => _i322.ProductRepositoryImpl(gh<_i785.ProductRemoteDataSource>()));
+    gh.singleton<_i586.BookmarkCubit>(
+        () => _i586.BookmarkCubit(gh<_i47.AuthCubit>()));
     gh.lazySingleton<_i936.CategoryRepository>(() =>
         _i750.CategoryRepositoryImpl(gh<_i591.CategoryRemoteDataSource>()));
     gh.lazySingleton<_i800.SearchAllUseCase>(
@@ -117,14 +118,16 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i394.GetMyCartOrdersUseCase(gh<_i839.CartRepository>()));
     gh.lazySingleton<_i394.SubmitCartUseCase>(
         () => _i394.SubmitCartUseCase(gh<_i839.CartRepository>()));
+    gh.singleton<_i356.CartCubit>(() => _i356.CartCubit(
+          gh<_i394.SubmitCartUseCase>(),
+          gh<_i47.AuthCubit>(),
+        ));
     gh.lazySingleton<_i574.GetMostPurchasedUseCase>(
         () => _i574.GetMostPurchasedUseCase(gh<_i52.ProductRepository>()));
     gh.lazySingleton<_i574.GetProductDetailsUseCase>(
         () => _i574.GetProductDetailsUseCase(gh<_i52.ProductRepository>()));
     gh.lazySingleton<_i574.GetProductsByCategoryUseCase>(
         () => _i574.GetProductsByCategoryUseCase(gh<_i52.ProductRepository>()));
-    gh.singleton<_i356.CartCubit>(
-        () => _i356.CartCubit(gh<_i394.SubmitCartUseCase>()));
     gh.lazySingleton<_i1022.GetAllCategoriesUseCase>(
         () => _i1022.GetAllCategoriesUseCase(gh<_i936.CategoryRepository>()));
     gh.factory<_i667.MostPurchasedCubit>(() => _i667.MostPurchasedCubit(

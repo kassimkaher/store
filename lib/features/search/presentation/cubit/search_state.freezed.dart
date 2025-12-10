@@ -20,7 +20,7 @@ mixin _$SearchState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<SearchResult> results, String query) loaded,
+    required TResult Function(List<ProductEntity> results, String query) loaded,
     required TResult Function(String message) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +28,7 @@ mixin _$SearchState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<SearchResult> results, String query)? loaded,
+    TResult? Function(List<ProductEntity> results, String query)? loaded,
     TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +36,7 @@ mixin _$SearchState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<SearchResult> results, String query)? loaded,
+    TResult Function(List<ProductEntity> results, String query)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) =>
@@ -126,7 +126,7 @@ class _$SearchInitialImpl implements SearchInitial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<SearchResult> results, String query) loaded,
+    required TResult Function(List<ProductEntity> results, String query) loaded,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -137,7 +137,7 @@ class _$SearchInitialImpl implements SearchInitial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<SearchResult> results, String query)? loaded,
+    TResult? Function(List<ProductEntity> results, String query)? loaded,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -148,7 +148,7 @@ class _$SearchInitialImpl implements SearchInitial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<SearchResult> results, String query)? loaded,
+    TResult Function(List<ProductEntity> results, String query)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -240,7 +240,7 @@ class _$SearchLoadingImpl implements SearchLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<SearchResult> results, String query) loaded,
+    required TResult Function(List<ProductEntity> results, String query) loaded,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -251,7 +251,7 @@ class _$SearchLoadingImpl implements SearchLoading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<SearchResult> results, String query)? loaded,
+    TResult? Function(List<ProductEntity> results, String query)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -262,7 +262,7 @@ class _$SearchLoadingImpl implements SearchLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<SearchResult> results, String query)? loaded,
+    TResult Function(List<ProductEntity> results, String query)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -320,7 +320,7 @@ abstract class _$$SearchLoadedImplCopyWith<$Res> {
           _$SearchLoadedImpl value, $Res Function(_$SearchLoadedImpl) then) =
       __$$SearchLoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<SearchResult> results, String query});
+  $Res call({List<ProductEntity> results, String query});
 }
 
 /// @nodoc
@@ -341,7 +341,7 @@ class __$$SearchLoadedImplCopyWithImpl<$Res>
       results: null == results
           ? _value._results
           : results // ignore: cast_nullable_to_non_nullable
-              as List<SearchResult>,
+              as List<ProductEntity>,
       query: null == query
           ? _value.query
           : query // ignore: cast_nullable_to_non_nullable
@@ -354,12 +354,12 @@ class __$$SearchLoadedImplCopyWithImpl<$Res>
 
 class _$SearchLoadedImpl implements SearchLoaded {
   const _$SearchLoadedImpl(
-      {required final List<SearchResult> results, required this.query})
+      {required final List<ProductEntity> results, required this.query})
       : _results = results;
 
-  final List<SearchResult> _results;
+  final List<ProductEntity> _results;
   @override
-  List<SearchResult> get results {
+  List<ProductEntity> get results {
     if (_results is EqualUnmodifiableListView) return _results;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_results);
@@ -397,7 +397,7 @@ class _$SearchLoadedImpl implements SearchLoaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<SearchResult> results, String query) loaded,
+    required TResult Function(List<ProductEntity> results, String query) loaded,
     required TResult Function(String message) error,
   }) {
     return loaded(results, query);
@@ -408,7 +408,7 @@ class _$SearchLoadedImpl implements SearchLoaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<SearchResult> results, String query)? loaded,
+    TResult? Function(List<ProductEntity> results, String query)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loaded?.call(results, query);
@@ -419,7 +419,7 @@ class _$SearchLoadedImpl implements SearchLoaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<SearchResult> results, String query)? loaded,
+    TResult Function(List<ProductEntity> results, String query)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -469,10 +469,10 @@ class _$SearchLoadedImpl implements SearchLoaded {
 
 abstract class SearchLoaded implements SearchState {
   const factory SearchLoaded(
-      {required final List<SearchResult> results,
+      {required final List<ProductEntity> results,
       required final String query}) = _$SearchLoadedImpl;
 
-  List<SearchResult> get results;
+  List<ProductEntity> get results;
   String get query;
   @JsonKey(ignore: true)
   _$$SearchLoadedImplCopyWith<_$SearchLoadedImpl> get copyWith =>
@@ -545,7 +545,7 @@ class _$SearchErrorImpl implements SearchError {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<SearchResult> results, String query) loaded,
+    required TResult Function(List<ProductEntity> results, String query) loaded,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -556,7 +556,7 @@ class _$SearchErrorImpl implements SearchError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<SearchResult> results, String query)? loaded,
+    TResult? Function(List<ProductEntity> results, String query)? loaded,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -567,7 +567,7 @@ class _$SearchErrorImpl implements SearchError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<SearchResult> results, String query)? loaded,
+    TResult Function(List<ProductEntity> results, String query)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
