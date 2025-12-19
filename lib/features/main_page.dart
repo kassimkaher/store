@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:store_web/core/widgets/custom_bottom_nav.dart';
 import 'package:store_web/core/widgets/skeleton_loading.dart';
 import 'package:store_web/features/auth/cubit/auth_cubit.dart';
@@ -23,6 +24,15 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   BottomNavItem _currentNavItem = BottomNavItem.home;
+
+  @override
+  void initState() {
+    super.initState();
+    // Remove splash screen after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

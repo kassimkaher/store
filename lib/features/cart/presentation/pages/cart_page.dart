@@ -105,7 +105,6 @@ class _CartPageState extends State<CartPage> {
       },
       child: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) => Scaffold(
-          backgroundColor: colorScheme.surfaceContainerHighest.withAlpha(150),
           body: Builder(
             builder: (context) {
               if (state.isLoading) {
